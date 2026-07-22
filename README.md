@@ -217,7 +217,38 @@ MTEX-Slip-Trace-Analysis/
 
 ## Usage Guide
 
-### Method 1: Using the STRCRYST Desktop Application
+### Method 1: Running the Standalone Executable (`STRCRYST.exe`)
+
+For end-users who prefer a direct desktop app experience without manually managing Python dependencies:
+
+1. Navigate to the distributed executable directory:
+   ```cmd
+   cd "STARTCRYST SOFTWARE v1.0/Software Files/STRCRYST/dist/STRCRYST"
+   ```
+2. Double-click or launch `STRCRYST.exe` from the command line:
+   ```cmd
+   STRCRYST.exe
+   ```
+3. In the STRCRYST application interface:
+   * Select the **Scripts Folder** containing your `.m` script files.
+   * Select the **Input Folder** containing `.ctf` format EBSD files.
+   * Select the **Output Folder** for saving figures and CSV data.
+   * Configure **Loading Direction**, **c/a Ratio** (e.g., 1.5930 for Zr), and **Crystal System Mode**.
+   * Click **Run Analysis**.
+4. Monitor progress in the real-time console log and inspect output maps in the built-in image gallery.
+
+#### Packaging `STRCRYST.exe` from Source
+If you modify the Python UI source code and wish to recompile the standalone `.exe` binary:
+```bash
+cd "STARTCRYST SOFTWARE v1.0/Software Files/STRCRYST"
+pip install pyinstaller
+pyinstaller STRCRYST.spec
+```
+The compiled executable package will be created in `dist/STRCRYST/`.
+
+---
+
+### Method 2: Running via Python (`main.py`)
 
 1. Open a terminal or command prompt and navigate to the application directory:
    ```bash
@@ -227,15 +258,11 @@ MTEX-Slip-Trace-Analysis/
    ```bash
    python main.py
    ```
-3. In the STRCRYST window:
-   * Select the **Scripts Folder** containing your `.m` script files.
-   * Select the **Input Folder** containing `.ctf` format EBSD files.
-   * Select the **Output Folder** for saving figures and CSV data.
-   * Configure **Loading Direction**, **c/a Ratio** (e.g., 1.5930 for Zr), and **Crystal System Mode**.
-   * Click **Run Analysis**.
-4. Monitor execution logs in the integrated console panel. View generated maps in the output gallery upon completion.
+3. Follow the interface instructions to configure folders and parameters before clicking **Run Analysis**.
 
-### Method 2: Running Directly in MATLAB
+---
+
+### Method 3: Running Directly in MATLAB
 
 1. Open MATLAB and ensure the MTEX toolbox is loaded (`startup_mtex`).
 2. Add the repository directory to your MATLAB path.
