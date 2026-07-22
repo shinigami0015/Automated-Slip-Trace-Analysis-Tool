@@ -2,6 +2,25 @@
 
 An automated computational framework and desktop software application for crystallographic slip trace identification, Schmid factor mapping, and deformation compatibility analysis in dual-phase ($\alpha$-HCP / $\beta$-BCC) metallic alloys.
 
+![MATLAB](https://img.shields.io/badge/MATLAB-R2021a%2B-0076A8?style=for-the-badge&logo=mathworks&logoColor=white)
+![MTEX](https://img.shields.io/badge/MTEX_Toolbox-Crystallography-4B0082?style=for-the-badge)
+![Python](https://img.shields.io/badge/Python-3.9%2B-3776AB?style=for-the-badge&logo=python&logoColor=white)
+![PyQt6](https://img.shields.io/badge/PyQt-6.0%2B-41CD52?style=for-the-badge&logo=qt&logoColor=white)
+![License](https://img.shields.io/badge/License-MIT-green?style=for-the-badge)
+
+---
+
+## Technology Stack
+
+| Layer | Component / Technology | Badge |
+| :--- | :--- | :--- |
+| **Numerical Core** | MATLAB (R2021a+) | ![MATLAB](https://img.shields.io/badge/MATLAB-0076A8?style=flat-square&logo=mathworks&logoColor=white) |
+| **Crystallography Engine** | MTEX Toolbox | ![MTEX](https://img.shields.io/badge/MTEX-4B0082?style=flat-square) |
+| **Desktop Application** | Python 3.9+ | ![Python](https://img.shields.io/badge/Python-3776AB?style=flat-square&logo=python&logoColor=white) |
+| **User Interface Framework** | PyQt6 | ![PyQt6](https://img.shields.io/badge/PyQt6-41CD52?style=flat-square&logo=qt&logoColor=white) |
+| **Inter-Process Integration** | MATLAB Engine API for Python | ![MATLAB Engine API](https://img.shields.io/badge/MATLAB_Engine_API-0076A8?style=flat-square&logo=mathworks&logoColor=white) |
+| **Executable Packaging** | PyInstaller | ![PyInstaller](https://img.shields.io/badge/PyInstaller-FFD43B?style=flat-square&logo=python&logoColor=black) |
+
 ---
 
 ## Overview
