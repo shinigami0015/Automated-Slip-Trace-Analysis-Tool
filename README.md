@@ -28,6 +28,103 @@ The repository includes both modular **MATLAB scripts** utilizing the MTEX toolb
 
 ---
 
+## System Architecture & Data Flow
+
+### 1. Overall System Architecture & Desktop Inter-Process Communication
+
+```mermaid
+graph TD
+    subgraph Frontend["STRCRYST Desktop UI (Python / PyQt6)"]
+        UI["Main Graphical Window"]
+        Config["Parameter Selection: Load Vector, c/a Ratio, Phase Mode"]
+        Worker["Asynchronous Background Worker (QThread)"]
+        Gallery["Output Image Gallery & Real-Time Console Log"]
+    end
+
+    subgraph IPC["Inter-Process Communication Layer"]
+        EngineAPI["MATLAB Engine API for Python"]
+        WSInject["Workspace Variable Injection (inputDir, outputBaseDir, ca_ratio)"]
+    end
+
+    subgraph Backend["Computational Physics Core (MATLAB & MTEX)"]
+        Wrapper["run_analysis.m / main.m Wrapper"]
+        PreProc["EBSD Processing Module (EBSD_processing.m)"]
+        TraceMod["Slip Trace Calculation (slip_trace.m)"]
+        SchmidMod["Schmid Factor Mapping (computeSchmidFactors.m)"]
+        CompatMod["Luster-Morris Compatibility (lustermorris.m)"]
+    end
+
+    subgraph Export["Structured Output Data"]
+        PNGs["EBSD Maps, Slip Traces & IPDF Plots (.png)"]
+        CSVs["Grain-Level Schmid & Slip Metrics (.csv)"]
+    end
+
+    UI --> Config
+    Config --> Worker
+    Worker --> EngineAPI
+    EngineAPI --> WSInject
+    WSInject --> Wrapper
+    Wrapper --> PreProc
+    PreProc --> TraceMod
+    PreProc --> SchmidMod
+    PreProc --> CompatMod
+    TraceMod --> Export
+    SchmidMod --> Export
+    CompatMod --> Export
+    Export --> Gallery
+```
+
+### 2. Scientific Crystallographic Workflow Pipeline
+
+```mermaid
+flowchart LR
+    subgraph Input["1. Data Ingestion"]
+        CTF["Raw EBSD Data (.ctf)"]
+    end
+
+    subgraph Preprocessing["2. Pre-processing & Boundary Construction"]
+        Align["Euler-to-Spatial Axis Alignment"]
+        Purge["Scan Artifact & Low CI Purging"]
+        Bound["Grain Reconstruction & Boundary Spline Smoothing"]
+    end
+
+    subgraph Physics["3. Crystallographic & Mechanical Analysis"]
+        IPF["Phase & IPF Map Generation"]
+        SlipCalc["Theoretical Surface Slip Trace Vector Calculation"]
+        SchmidCalc["Maximum Resolved Shear Stress / Schmid Factor (m_max)"]
+        CompatCalc["Grain Boundary Geometric Luster-Morris (m') Parameter"]
+    end
+
+    subgraph PhaseLogic["4. Phase & Slip Family Classification"]
+        HCP["Alpha Phase (HCP)<br/>Basal {0001}<11-20><br/>Prismatic {10-10}<11-20><br/>Pyramidal {10-11}<11-20>"]
+        BCC["Beta Phase (BCC)<br/>{110}<111><br/>{112}<111><br/>{123}<111>"]
+    end
+
+    subgraph Output["5. Quantitative Export & Visualization"]
+        Maps["Overlaid Slip Trace Figures"]
+        Stats["Phase-Wise Slip Family Distribution Histogram"]
+        Tables["Grain-Level Parameter Datasets (.csv)"]
+    end
+
+    CTF --> Align --> Purge --> Bound
+    Bound --> IPF
+    IPF --> SlipCalc
+    IPF --> SchmidCalc
+    IPF --> CompatCalc
+    SlipCalc --> HCP
+    SlipCalc --> BCC
+    SchmidCalc --> HCP
+    SchmidCalc --> BCC
+    HCP --> Maps
+    BCC --> Maps
+    HCP --> Stats
+    BCC --> Stats
+    HCP --> Tables
+    BCC --> Tables
+```
+
+---
+
 ## Release Notes
 
 ### Version 1.0.0
