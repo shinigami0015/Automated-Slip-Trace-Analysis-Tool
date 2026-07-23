@@ -6,7 +6,7 @@ An automated computational framework and desktop software application for crysta
 ![MTEX](https://img.shields.io/badge/MTEX_Toolbox-Crystallography-4B0082?style=for-the-badge)
 ![Python](https://img.shields.io/badge/Python-3.9%2B-3776AB?style=for-the-badge&logo=python&logoColor=white)
 ![PyQt6](https://img.shields.io/badge/PyQt-6.0%2B-41CD52?style=for-the-badge&logo=qt&logoColor=white)
-![License](https://img.shields.io/badge/License-MIT-green?style=for-the-badge)
+![License](https://img.shields.io/badge/License-GPL--3.0-blue?style=for-the-badge)
 
 ---
 
@@ -303,4 +303,4 @@ For each processed input file, the pipeline generates structured outputs:
 
 ## License
 
-This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
+This project is licensed under the GNU General Public License v3.0 (GPLv3) - see the [LICENSE](LICENSE) file for details.
