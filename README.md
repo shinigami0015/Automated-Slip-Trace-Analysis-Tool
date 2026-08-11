@@ -298,6 +298,7 @@ For each processed input file, the pipeline generates structured outputs:
 
 * **Core Algorithms & Numerical Implementation:** Dhiraj Kori
 * **User Interface & Application Architecture:** Parardha Dhar
+* **Code script and UI testing:** Abhinav Chandraker
 
 ---
 
