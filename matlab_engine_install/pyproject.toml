@@ -1,0 +1,4 @@
+# used by pip to build and install packages
+[build-system]
+requires = ["setuptools >= 42", "wheel"]
+build-backend = "setuptools.build_meta"
