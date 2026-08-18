@@ -1,1 +1,0 @@
-# STRCRYST core package
