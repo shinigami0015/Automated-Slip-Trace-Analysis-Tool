@@ -1,6 +1,8 @@
-# MTEX Slip Trace Analysis & STRCRYST Application
+# Automated Slip-Trace Analysis (ASTA) Tool
 
-An automated computational framework and desktop software application for crystallographic slip trace identification, Schmid factor mapping, and deformation compatibility analysis in dual-phase ($\alpha$-HCP / $\beta$-BCC) metallic alloys.
+An automated computational framework based on MTEX, and a desktop software application for crystallographic slip trace identification and Schmid factor mapping, and deformation compatibility analysis in dual-phase ($\alpha$-HCP / $\beta$-BCC) metallic alloys. 
+
+ASTA tool will always be free. Kindly cite (article name and doi) if using this for your work, so that your colleagues may also know about this tool.
 
 ![MATLAB](https://img.shields.io/badge/MATLAB-R2021a%2B-0076A8?style=for-the-badge&logo=mathworks&logoColor=white)
 ![MTEX](https://img.shields.io/badge/MTEX_Toolbox-Crystallography-4B0082?style=for-the-badge)
@@ -25,9 +27,9 @@ An automated computational framework and desktop software application for crysta
 
 ## Overview
 
-The **MTEX Slip Trace Analysis** framework provides an integrated pipeline for microstructural and crystallographic deformation analysis using Electron Backscatter Diffraction (EBSD) data. By combining raw EBSD data import, automatic spatial alignment, grain boundary identification, theoretical slip trace modeling, and Schmid factor calculations, this tool allows researchers to evaluate active slip systems and local deformation compatibility across individual grains and phase boundaries.
+The **ASTA** framework provides an integrated pipeline for microstructural and crystallographic deformation analysis using Electron Backscatter Diffraction (EBSD) data. By combining raw EBSD data import, automatic spatial alignment, grain boundary identification, theoretical slip trace modeling, and Schmid factor calculations, this tool allows researchers to evaluate active slip systems and local deformation compatibility across individual grains and phase boundaries.
 
-The repository includes both modular **MATLAB scripts** utilizing the MTEX toolbox and **STRCRYST**, a modern desktop interface built with Python and PyQt6 that interfaces directly with the MATLAB Engine API.
+The repository includes both modular **MATLAB scripts** utilizing the MTEX toolbox and **ASTA**, a modern desktop interface built with Python and PyQt6 that interfaces directly with the MATLAB Engine API.
 
 ---
 
@@ -40,7 +42,7 @@ The repository includes both modular **MATLAB scripts** utilizing the MTEX toolb
 * **Deformation Compatibility ($m'$ Parameter):** Boundary-by-boundary calculation and spatial mapping of the geometric Luster-Morris deformation compatibility parameter across grain interfaces.
 * **Statistical Data Export:** Automated extraction of grain-level crystallographic properties and aggregated slip system distribution statistics exported directly to CSV and high-resolution figures.
 
-### STRCRYST Desktop Application (v1.0 UI)
+### ASTA Desktop Application (v1.0 UI)
 * **Graphical Control Interface:** Full visual management of input datasets, output directories, loading vectors, axial ratios, and crystal system configurations.
 * **Asynchronous Execution:** Threaded background computation preventing UI freezing during heavy MATLAB numerical operations.
 * **Built-in Output Inspection:** Thumbnail grid viewer and full-resolution image inspection window for generated EBSD maps and statistical plots.
