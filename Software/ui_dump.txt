@@ -1,0 +1,77 @@
+Control Identifiers:
+
+Dialog - 'ASTA Tool'    (L528, T136, R1868, B996)
+['Dialog', 'ASTA Tool', 'ASTA ToolDialog', 'ASTA Tool0', 'ASTA Tool1']
+child_window(title="ASTA Tool", auto_id="QApplication.MainWindow", control_type="Window")
+   | 
+   | GroupBox - ''    (L528, T136, R1868, B996)
+   | ['ASTA ToolGroupBox', 'GroupBox', 'ASTA ToolGroupBox0', 'ASTA ToolGroupBox1', 'GroupBox0', 'GroupBox1']
+   | child_window(auto_id="QApplication.MainWindow.QWidget", control_type="Group")
+   |    | 
+   |    | GroupBox - ''    (L528, T136, R1868, B168)
+   |    | ['ASTA ToolGroupBox2', 'GroupBox2']
+   |    | child_window(auto_id="QApplication.MainWindow.QWidget.titleBar", control_type="Group")
+   |    |    | 
+   |    |    | Static - 'ASTA Tool'    (L542, T136, R606, B168)
+   |    |    | ['Static', 'ASTA Tool2', 'ASTA ToolStatic', 'Static0', 'Static1']
+   |    |    | child_window(title="ASTA Tool", auto_id="QApplication.MainWindow.QWidget.titleBar.QLabel", control_type="Text")
+   |    |    | 
+   |    |    | GroupBox - ''    (L1730, T136, R1776, B168)
+   |    |    | ['ASTA ToolGroupBox3', 'GroupBox3']
+   |    |    | child_window(auto_id="QApplication.MainWindow.QWidget.titleBar._WinCtrlBtn", control_type="Group")
+   |    |    | 
+   |    |    | GroupBox - ''    (L1776, T136, R1822, B168)
+   |    |    | ['GroupBox4']
+   |    |    | child_window(auto_id="QApplication.MainWindow.QWidget.titleBar._WinCtrlBtn", control_type="Group")
+   |    |    | 
+   |    |    | GroupBox - ''    (L1822, T136, R1868, B168)
+   |    |    | ['GroupBox5']
+   |    |    | child_window(auto_id="QApplication.MainWindow.QWidget.titleBar._WinCtrlBtn", control_type="Group")
+   |    | 
+   |    | GroupBox - ''    (L528, T168, R1868, B970)
+   |    | ['ASTA ToolGroupBox4', 'GroupBox6']
+   |    | child_window(auto_id="QApplication.MainWindow.QWidget.QWidget", control_type="Group")
+   |    |    | 
+   |    |    | GroupBox - ''    (L528, T168, R840, B970)
+   |    |    | ['ASTA ToolGroupBox5', 'GroupBox7']
+   |    |    | child_window(auto_id="QApplication.MainWindow.QWidget.QWidget.sidebar", control_type="Group")
+   |    |    |    | 
+   |    |    |    | GroupBox - ''    (L528, T168, R840, B256)
+   |    |    |    | ['ASTA ToolGroupBox6', 'GroupBox8']
+   |    |    |    | child_window(auto_id="QApplication.MainWindow.QWidget.QWidget.sidebar.sidebarHeader", control_type="Group")
+   |    |    |    | 
+   |    |    |    | GroupBox - ''    (L528, T256, R840, B805)
+   |    |    |    | ['PROJECTGroupBox', 'GroupBox9', 'PROJECTGroupBox0', 'PROJECTGroupBox1']
+   |    |    |    | child_window(auto_id="QApplication.MainWindow.QWidget.QWidget.sidebar.QScrollArea", control_type="Group")
+   |    |    |    | 
+   |    |    |    | GroupBox - ''    (L528, T805, R840, B970)
+   |    |    |    | ['GroupBox23', 'Loading DirectionGroupBox3']
+   |    |    |    | child_window(auto_id="QApplication.MainWindow.QWidget.QWidget.sidebar.controlsPanel", control_type="Group")
+   |    |    | 
+   |    |    | GroupBox - ''    (L840, T168, R1868, B970)
+   |    |    | ['PROJECTGroupBox6', 'GroupBox25']
+   |    |    | child_window(auto_id="QApplication.MainWindow.QWidget.QWidget.contentArea", control_type="Group")
+   |    |    |    | 
+   |    |    |    | GroupBox - ''    (L840, T168, R1868, B212)
+   |    |    |    | ['ASTA ToolGroupBox7', 'GroupBox26']
+   |    |    |    | child_window(auto_id="QApplication.MainWindow.QWidget.QWidget.contentArea.tabBar", control_type="Group")
+   |    |    |    | 
+   |    |    |    | Pane - ''    (L840, T212, R1868, B970)
+   |    |    |    | ['PROJECTPane', 'Pane']
+   |    |    |    | child_window(auto_id="QApplication.MainWindow.QWidget.QWidget.contentArea.QStackedWidget", control_type="Pane")
+   |    | 
+   |    | GroupBox - ''    (L528, T970, R1868, B996)
+   |    | ['Run the analysis to generate outputs.GroupBox', 'GroupBox31']
+   |    | child_window(auto_id="QApplication.MainWindow.QWidget.QWidget", control_type="Group")
+   |    |    | 
+   |    |    | Button - '☀ Light Mode'    (L542, T970, R640, B995)
+   |    |    | ['☀ Light Mode', '☀ Light ModeButton', 'Button12']
+   |    |    | child_window(title="☀ Light Mode", auto_id="QApplication.MainWindow.QWidget.QWidget.linkBtn", control_type="Button")
+   |    |    | 
+   |    |    | Static - 'v1.1.0  ·  IISc Materials Lab'    (L1703, T970, R1835, B996)
+   |    |    | ['Static9', 'v1.1.0  ·  IISc Materials LabStatic', 'v1.1.0  ·  IISc Materials Lab']
+   |    |    | child_window(title="v1.1.0  ·  IISc Materials Lab", auto_id="QApplication.MainWindow.QWidget.QWidget.QLabel", control_type="Text")
+   |    |    | 
+   |    |    | Thumb - ''    (L1845, T974, R1862, B991)
+   |    |    | ['v1.1.0  ·  IISc Materials LabThumb', 'Thumb']
+   |    |    | child_window(auto_id="QApplication.MainWindow.QWidget.QWidget.QSizeGrip", control_type="Thumb")
