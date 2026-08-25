@@ -191,28 +191,31 @@ To run the analysis scripts and the STRCRYST desktop application, ensure the fol
 ## Repository Structure
 
 ```
-MTEX-Slip-Trace-Analysis/
-├── main.m                            # Primary MATLAB execution script
-├── EBSD_processing.m                 # EBSD import, filtering, and grain reconstruction
-├── slip_trace.m                      # Theoretical slip trace calculation module
-├── activated_slips.m                 # Identification of active slip system families
-├── computeSchmidFactors.m            # Schmid factor tensor calculation
-├── lustermorris.m                    # Luster-Morris (m') compatibility analysis
-├── slip_systems.m                    # Definition of HCP and BCC slip system geometries
-├── slipsystemdist.m                  # Statistical distribution compilation
-├── match_slip_label.m                # Indexing helper (3-index BCC / 4-index HCP)
-├── angle_with_horizontal.m           # Geometric orientation helper functions
-├── cosTheta.m                        # Vector angular metric calculator
-├── modifyctf.m                       # CTF data format normalization helper
-├── EBSD_crystal_orientation_image.m  # Orientation map rendering helper
-└── STARTCRYST SOFTWARE v1.0/         # Desktop UI application files
-    └── Software Files/
-        └── STRCRYST/                 # Python PyQt6 GUI application codebase
-            ├── main.py               # Main entry point for the desktop GUI
-            ├── run_analysis.m        # MATLAB wrapper script for UI injection
-            ├── ui/                   # Desktop UI components and layout widgets
-            ├── core/                 # Background process worker management
-            └── STRCRYST.spec         # PyInstaller packaging configuration
+Automated-Slip-Trace-Analysis-Tool/
++-- Code files/
+�   +-- main.m                            # Primary MATLAB execution script
+�   +-- EBSD_processing.m                 # EBSD import, filtering, and grain reconstruction
+�   +-- slip_trace.m                      # Theoretical slip trace calculation module
+�   +-- activated_slips.m                 # Identification of active slip system families
+�   +-- computeSchmidFactors.m            # Schmid factor tensor calculation
+�   +-- lustermorris.m                    # Luster-Morris (m') compatibility analysis
+�   +-- slip_systems.m                    # Definition of HCP and BCC slip system geometries
+�   +-- slipsystemdist.m                  # Statistical distribution compilation
+�   +-- match_slip_label.m                # Indexing helper (3-index BCC / 4-index HCP)
+�   +-- angle_with_horizontal.m           # Geometric orientation helper functions
+�   +-- cosTheta.m                        # Vector angular metric calculator
+�   +-- modifyctf.m                       # CTF data format normalization helper
+�   +-- EBSD_crystal_orientation_image.m  # Orientation map rendering helper
++-- Input files/                          # Sample raw EBSD data (.ctf)
++-- Output/                               # Processed output maps, PNGs, and CSVs
++-- matlab_engine_install/                # MATLAB Engine API for Python install packages
++-- Software/                             # Python PyQt6 GUI application codebase
+�   +-- main.py                           # Main entry point for the desktop GUI
+�   +-- run_analysis.m                    # MATLAB wrapper script for UI injection
+�   +-- ui/                               # Desktop UI components and layout widgets
+�   +-- core/                             # Background process worker management
+�   +-- ASTA Tool.spec                    # PyInstaller packaging configuration
++-- ASTA_Tool_Final_Release.zip           # Pre-built Portable Windows Executable
 ```
 
 ---
@@ -307,3 +310,4 @@ For each processed input file, the pipeline generates structured outputs:
 ## License
 
 This project is licensed under the GNU General Public License v3.0 (GPLv3) - see the [LICENSE](LICENSE) file for details.
+
