@@ -6,6 +6,7 @@ Intro -> Crystal Splash -> Diagnostics -> Manual -> Main Window
 """
 import sys
 import os
+import glob
 
 if getattr(sys, 'frozen', False):
     APP_DIR = sys._MEIPASS
@@ -14,17 +15,47 @@ else:
 
 sys.path.insert(0, APP_DIR)
 
-# Force MATLAB R2023a to be found first by matlab.engine
-matlab_path = r"C:\Program Files\MATLAB\R2023a\bin\win64"
-if os.path.exists(matlab_path):
-    os.environ["PATH"] = matlab_path + os.pathsep + os.environ.get("PATH", "")
+# ── Find MATLAB installation ──────────────────────────────────────────────────
+# Scan for any installed MATLAB version and add its bin to PATH
+for _matlab_bin in sorted(glob.glob(r"C:\Program Files\MATLAB\R*\bin\win64"), reverse=True):
+    os.environ["PATH"] = _matlab_bin + os.pathsep + os.environ.get("PATH", "")
+    break  # Use the newest found
 
-# PyInstaller packages matlab into a zip, which breaks matlab.__init__.py's subdir_exists check.
-# This causes it to fallback to scanning PATH and finding the wrong MATLAB.
-# Injecting the correct extern/bin/win64 path into sys.path bypasses the bug.
-matlab_extern_bin = r"C:\Program Files\MATLAB\R2023a\extern\bin\win64"
-if matlab_extern_bin not in sys.path:
-    sys.path.insert(0, matlab_extern_bin)
+# ── Find matlab.engine Python package ────────────────────────────────────────
+# PyInstaller bundles its own Python which cannot access system site-packages.
+# We search all Python installations on this machine for the matlab package
+# and inject its location into sys.path so `import matlab.engine` can succeed.
+def _inject_matlab_package():
+    try:
+        import matlab.engine  # noqa – already available, nothing to do
+        return
+    except Exception:
+        pass
+
+    _search_patterns = [
+        r"C:\Python*\Lib\site-packages",
+        r"C:\Python*\lib\site-packages",
+        r"C:\Users\*\AppData\Local\Programs\Python\Python*\Lib\site-packages",
+        r"C:\Users\*\AppData\Roaming\Python\Python*\site-packages",
+        r"C:\ProgramData\anaconda*\Lib\site-packages",
+        r"C:\ProgramData\miniconda*\Lib\site-packages",
+        r"C:\Users\*\anaconda*\Lib\site-packages",
+        r"C:\Users\*\miniconda*\Lib\site-packages",
+        r"C:\Program Files\MATLAB\R*\extern\engines\python\build\lib",
+        r"C:\Program Files\MATLAB\R*\extern\engines\python\build\lib.win*",
+    ]
+    for _pattern in _search_patterns:
+        for _dir in sorted(glob.glob(_pattern), reverse=True):
+            if os.path.isdir(os.path.join(_dir, "matlab")):
+                if _dir not in sys.path:
+                    sys.path.insert(0, _dir)
+                try:
+                    import matlab.engine  # noqa
+                    return  # Found and loaded successfully
+                except Exception:
+                    sys.path.remove(_dir)  # Didn't work, try next
+
+_inject_matlab_package()
 
 from PyQt6.QtWidgets import QApplication
 from PyQt6.QtCore    import Qt
