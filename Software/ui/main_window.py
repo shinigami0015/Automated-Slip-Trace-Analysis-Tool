@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 """
-ASTA Tool -- Premium Main Window
+STRCRYST -- Premium Main Window
 AAA Future-Proof UI with Theme Engine, Session Memory, and Windows Controls.
 """
 import os
@@ -8,14 +8,13 @@ import sys
 import math
 import shutil
 
-from PyQt6.QtCore import (Qt, QTimer, QPointF, pyqtSlot, QPropertyAnimation, QEasingCurve, pyqtProperty, QAbstractTableModel, QSortFilterProxyModel)
+from PyQt6.QtCore import (Qt, QTimer, QPointF, pyqtSlot, QPropertyAnimation, QEasingCurve, pyqtProperty)
 from PyQt6.QtGui  import (QPainter, QColor, QRadialGradient, QPen, QBrush, QFont, QPolygonF)
 from PyQt6.QtWidgets import (
     QMainWindow, QWidget, QVBoxLayout, QHBoxLayout, QScrollArea,
     QLabel, QLineEdit, QPushButton, QComboBox, QDoubleSpinBox,
     QTextEdit, QFrame, QSizePolicy, QMessageBox, QFileDialog,
-    QGridLayout, QStackedWidget, QProgressBar, QSizeGrip, QDialog,
-    QTableView, QHeaderView
+    QGridLayout, QStackedWidget, QProgressBar, QSizeGrip
 )
 
 from ui.styles       import get_stylesheet, get_status_style, get_theme_colors
@@ -30,60 +29,6 @@ def _hline():
 
 def _spacer(h: int = 8) -> QWidget:
     w = QWidget(); w.setFixedHeight(h); return w
-
-# ══════════════════════════════════════════════════════════════════════════════
-class CsvTableModel(QAbstractTableModel):
-    def __init__(self, data, headers, is_dark):
-        super().__init__()
-        self._data = data
-        self._headers = headers
-        self._is_dark = is_dark
-        self._c = get_theme_colors(is_dark)
-
-    def rowCount(self, parent=None):
-        return len(self._data)
-
-    def columnCount(self, parent=None):
-        return len(self._headers)
-
-    def data(self, index, role=Qt.ItemDataRole.DisplayRole):
-        if not index.isValid(): return None
-        row, col = index.row(), index.column()
-        val = self._data[row][col]
-        
-        # Try to sort numerically if possible
-        if role == Qt.ItemDataRole.DisplayRole or role == Qt.ItemDataRole.EditRole:
-            try:
-                # If the string can be parsed as a float, return the float for proper numeric sorting
-                # (but avoid doing this if it looks like an ID with leading zeros etc., though for our data it's fine)
-                return float(val)
-            except ValueError:
-                return val
-            
-        if role == Qt.ItemDataRole.BackgroundRole:
-            try:
-                max_idx = self._headers.index("IsMaxSchmid")
-                if self._data[row][max_idx] == "1":
-                    return QColor(self._c['ACCENT_H'] if self._is_dark else self._c['ACCENT'])
-            except ValueError:
-                pass
-            return None
-            
-        if role == Qt.ItemDataRole.ForegroundRole:
-            try:
-                max_idx = self._headers.index("IsMaxSchmid")
-                if self._data[row][max_idx] == "1":
-                    return QColor("#FFFFFF")
-            except ValueError:
-                pass
-            return QColor(self._c['TEXT_1'])
-
-        return None
-        
-    def headerData(self, section, orientation, role=Qt.ItemDataRole.DisplayRole):
-        if role == Qt.ItemDataRole.DisplayRole and orientation == Qt.Orientation.Horizontal:
-            return self._headers[section]
-        return None
 
 # ══════════════════════════════════════════════════════════════════════════════
 class StatusIndicator(QWidget):
@@ -184,16 +129,9 @@ class FolderPickerRow(QWidget):
         h.addWidget(browse_btn)
         v.addLayout(h)
 
-    last_path = os.path.expanduser("~")
-
     def _browse(self):
-        start_dir = self.path_edit.text().strip()
-        if not start_dir or not os.path.isdir(start_dir):
-            start_dir = FolderPickerRow.last_path
-        folder = QFileDialog.getExistingDirectory(self, "Select Folder", start_dir)
-        if folder:
-            FolderPickerRow.last_path = folder
-            self.path_edit.setText(folder)
+        folder = QFileDialog.getExistingDirectory(self, "Select Folder", self.path_edit.text() or os.path.expanduser("~"))
+        if folder: self.path_edit.setText(folder)
     def text(self) -> str: return self.path_edit.text().strip()
     def setText(self, t: str): self.path_edit.setText(t)
 
@@ -276,7 +214,7 @@ class SidebarHeader(QWidget):
         tf.setLetterSpacing(QFont.SpacingType.AbsoluteSpacing, 4)
         p.setFont(tf)
         p.setPen(QColor(c['TEXT_1']))
-        p.drawText(cx + r + 16, 14, W - cx - r - 24, 32, Qt.AlignmentFlag.AlignLeft | Qt.AlignmentFlag.AlignVCenter, "ASTA Tool")
+        p.drawText(cx + r + 16, 14, W - cx - r - 24, 32, Qt.AlignmentFlag.AlignLeft | Qt.AlignmentFlag.AlignVCenter, "STRCRYST")
 
         sf = QFont("Segoe UI", 7)
         sf.setLetterSpacing(QFont.SpacingType.AbsoluteSpacing, 1)
@@ -385,10 +323,6 @@ class MainWindow(QMainWindow):
         self.input_picker.path_edit.textChanged.connect(self._save_session_data)
         self.output_picker.path_edit.textChanged.connect(self._save_session_data)
 
-        self.scripts_picker.path_edit.setToolTip("Select the folder containing 'run_analysis.m' or 'main.m'.")
-        self.input_picker.path_edit.setToolTip("Select the folder containing your .ctf (EBSD data) files.")
-        self.output_picker.path_edit.setToolTip("Select where the generated CSVs and Plots should be saved.")
-
         iv.addWidget(self.scripts_picker)
         iv.addWidget(_spacer(14))
         iv.addWidget(self.input_picker)
@@ -437,49 +371,10 @@ class MainWindow(QMainWindow):
         self.crystal_combo = QComboBox()
         self.crystal_combo.addItems(["HCP + BCC", "HCP only", "BCC only"])
         self.crystal_combo.currentTextChanged.connect(self._save_session_data)
-        
-        self.loading_combo.setToolTip("The macroscopic loading direction applied to the sample.\nUsually X, Y, or Z.")
-        self.ca_spin.setToolTip("Ratio of the c-axis to a-axis lattice parameters.\nFor Zirconium, the ideal value is ~1.593.")
-        self.crystal_combo.setToolTip("Select the crystal phases present in the sample.\n'HCP + BCC' is standard for Zirconium alloys.")
-        
         adv_l.addWidget(self.crystal_combo)
         
         self._adv_widget.setVisible(False)
         iv.addWidget(self._adv_widget)
-
-        iv.addWidget(_spacer(22))
-        iv.addWidget(_hline())
-        iv.addWidget(_spacer(18))
-        iv.addWidget(self._section_label("Help & Support"))
-        iv.addWidget(_spacer(12))
-
-        self.manual_btn = QPushButton("📖 User Manual")
-        self.manual_btn.setObjectName("ghostBtn")
-        self.manual_btn.setCursor(Qt.CursorShape.PointingHandCursor)
-        self.manual_btn.clicked.connect(self._show_manual)
-        
-        self.help_btn = QPushButton("💬 Contact Support")
-        self.help_btn.setObjectName("ghostBtn")
-        self.help_btn.setCursor(Qt.CursorShape.PointingHandCursor)
-        self.help_btn.clicked.connect(self._show_help)
-
-        self.test_conn_btn = QPushButton("🔌 Test MATLAB API")
-        self.test_conn_btn.setObjectName("ghostBtn")
-        self.test_conn_btn.setCursor(Qt.CursorShape.PointingHandCursor)
-        self.test_conn_btn.clicked.connect(self._test_matlab)
-
-        self.about_btn = QPushButton("ℹ About")
-        self.about_btn.setObjectName("ghostBtn")
-        self.about_btn.setCursor(Qt.CursorShape.PointingHandCursor)
-        self.about_btn.clicked.connect(self._show_about)
-
-        iv.addWidget(self.manual_btn)
-        iv.addWidget(_spacer(8))
-        iv.addWidget(self.help_btn)
-        iv.addWidget(_spacer(8))
-        iv.addWidget(self.test_conn_btn)
-        iv.addWidget(_spacer(8))
-        iv.addWidget(self.about_btn)
 
         iv.addStretch()
         scroll.setWidget(inner)
@@ -564,13 +459,7 @@ class MainWindow(QMainWindow):
         self._btn_console.setProperty("active", "false")
         self._btn_console.clicked.connect(lambda: self._switch_tab(1))
 
-        self._btn_dashboard = QPushButton("Analytics Dashboard")
-        self._btn_dashboard.setObjectName("tabBtn")
-        self._btn_dashboard.setProperty("active", "false")
-        self._btn_dashboard.clicked.connect(lambda: self._switch_tab(2))
-
         tbl.addWidget(self._btn_outputs)
-        tbl.addWidget(self._btn_dashboard)
         tbl.addWidget(self._btn_console)
         tbl.addStretch()
 
@@ -595,7 +484,6 @@ class MainWindow(QMainWindow):
         av.addWidget(self._stack, 1)
         self._stack.addWidget(self._build_outputs_page())
         self._stack.addWidget(self._build_console_page())
-        self._stack.addWidget(self._build_dashboard_page())
         self._switch_tab(0)
         return area
 
@@ -628,24 +516,6 @@ class MainWindow(QMainWindow):
         pv.addWidget(self.log_edit)
         return page
 
-    def _build_dashboard_page(self) -> QWidget:
-        page = QWidget()
-        pv = QVBoxLayout(page)
-        pv.setContentsMargins(18, 18, 18, 18)
-        
-        self.dashboard_header = QLabel("Run the analysis to view interactive CSV data.")
-        self.dashboard_header.setStyleSheet("color: #8E8E93; font-family: Segoe UI; font-size: 14pt; margin-bottom: 10px;")
-        pv.addWidget(self.dashboard_header)
-        
-        self.dashboard_table = QTableView()
-        self.dashboard_table.setSortingEnabled(True)
-        self.dashboard_table.horizontalHeader().setStretchLastSection(True)
-        self.dashboard_table.horizontalHeader().setSectionResizeMode(QHeaderView.ResizeMode.Interactive)
-        self.dashboard_table.setAlternatingRowColors(True)
-        self.dashboard_table.setSelectionBehavior(QTableView.SelectionBehavior.SelectRows)
-        pv.addWidget(self.dashboard_table, 1)
-        return page
-
     def _build_statusbar(self) -> QWidget:
         bar = QWidget()
         bar.setFixedHeight(26)
@@ -670,13 +540,12 @@ class MainWindow(QMainWindow):
         self._stack.setCurrentIndex(idx)
         self._btn_outputs.setProperty("active", "true" if idx == 0 else "false")
         self._btn_console.setProperty("active", "true" if idx == 1 else "false")
-        self._btn_dashboard.setProperty("active", "true" if idx == 2 else "false")
-        for btn in (self._btn_outputs, self._btn_console, self._btn_dashboard):
+        for btn in (self._btn_outputs, self._btn_console):
             btn.style().unpolish(btn)
             btn.style().polish(btn)
         
         self._export_btn.setVisible(idx == 0)
-        self._refresh_btn.setVisible(idx in [0, 2])
+        self._refresh_btn.setVisible(idx == 0)
         self._clear_log_btn.setVisible(idx == 1)
 
     # ── Session / Validation ──
@@ -763,35 +632,6 @@ class MainWindow(QMainWindow):
     def _refresh_thumbnails(self):
         out = self.output_picker.text()
         if not out or not os.path.isdir(out): return
-        
-        csvs = sorted([os.path.join(r, f) for r, _, fs in os.walk(out) for f in fs if f.lower().endswith(".csv")])
-        if csvs:
-            try:
-                import csv
-                with open(csvs[-1], 'r', encoding='utf-8') as f:
-                    reader = csv.reader(f)
-                    headers = next(reader, [])
-                    data = [row for row in reader]
-                
-                c = get_theme_colors(self._is_dark)
-                self.dashboard_header.setText(f"Interactive Data Viewer: {os.path.basename(csvs[-1])} ({len(data)} rows)")
-                self.dashboard_header.setStyleSheet(f"color: {c['TEXT_1']}; font-family: Segoe UI; font-size: 14pt; margin-bottom: 10px;")
-                
-                self.dashboard_table.setStyleSheet(f"""
-                    QTableView {{ background-color: {c['BG_APP']}; border: none; gridline-color: {c['BORDER_DIM']}; color: {c['TEXT_1']}; }}
-                    QHeaderView::section {{ background-color: {c['BG_CARD']}; color: {c['TEXT_1']}; padding: 6px; border: 1px solid {c['BORDER_DIM']}; font-weight: bold; }}
-                    QTableView::item:selected {{ background-color: {c['ACCENT']}; color: #FFFFFF; }}
-                """)
-                
-                model = CsvTableModel(data, headers, self._is_dark)
-                proxy = QSortFilterProxyModel()
-                proxy.setSourceModel(model)
-                self.dashboard_table.setModel(proxy)
-                self.dashboard_table.resizeColumnsToContents()
-            except Exception as e:
-                self.dashboard_header.setText(f"Error loading CSV: {e}")
-                self.dashboard_header.setStyleSheet("color: red;")
-
         pngs = sorted([os.path.join(r, f) for r, _, fs in os.walk(out) for f in fs if f.lower().endswith(".png")])
         while self.thumb_grid.count():
             item = self.thumb_grid.takeAt(0)
@@ -813,7 +653,7 @@ class MainWindow(QMainWindow):
         out = self.output_picker.text()
         if not out or not os.path.isdir(out):
             return self._err("No Output Folder", "Please run analysis first.")
-        save_path, _ = QFileDialog.getSaveFileName(self, "Save Zip", os.path.join(out, "ASTA Tool_Results.zip"), "Zip Files (*.zip)")
+        save_path, _ = QFileDialog.getSaveFileName(self, "Save Zip", os.path.join(out, "STRCRYST_Results.zip"), "Zip Files (*.zip)")
         if save_path:
             shutil.make_archive(save_path.replace(".zip", ""), 'zip', out)
             QMessageBox.information(self, "Success", f"Results zipped to:\n{save_path}")
@@ -831,65 +671,3 @@ class MainWindow(QMainWindow):
         if self._worker and self._worker.isRunning():
             self._worker.abort(); self._worker.wait(5000)
         e.accept()
-
-    def _show_manual(self):
-        msg = QMessageBox(self)
-        msg.setWindowTitle("ASTA Tool Full Manual")
-        msg.setStyleSheet(f"background: {get_theme_colors(self._is_dark)['BG_CARD']}; color: {get_theme_colors(self._is_dark)['TEXT_1']};")
-        msg.setText("<h2>ASTA Tool User Manual</h2>"
-                    "<h3>How to use:</h3>"
-                    "1. <b>Scripts Folder:</b> Select the folder where your MATLAB (.m) scripts are located.<br>"
-                    "2. <b>Input Folder:</b> Select the folder containing your .ctf (EBSD) data files.<br>"
-                    "3. <b>Output Folder:</b> Choose where you want the generated CSVs and Plots to be saved.<br>"
-                    "4. <b>Analysis Parameters:</b> Set the loading direction, c/a ratio, and the crystal system.<br>"
-                    "5. Click <b>'Run Analysis'</b> to start.<br><br>"
-                    "<h3>Troubleshooting:</h3>"
-                    "• <b>MATLAB Engine Fails:</b> Ensure you have MATLAB 2023a+ installed and the MATLAB Engine API for Python is properly configured.<br>"
-                    "• <b>Missing Slip Systems:</b> Ensure your data sets contain enough valid grain geometries to trigger all required slip systems. The calculation depends on geometric Schmid factors unless CRSS weights are used.<br>"
-                    "• <b>UI Freezes:</b> The UI is fully asynchronous, so if it freezes, it means the MATLAB engine is hung. Use the 'Abort' button to force close."
-                    )
-        msg.setIcon(QMessageBox.Icon.Information)
-        msg.exec()
-
-    def _show_help(self):
-        msg = QMessageBox(self)
-        msg.setWindowTitle("Contact Support")
-        msg.setStyleSheet(f"background: {get_theme_colors(self._is_dark)['BG_CARD']}; color: {get_theme_colors(self._is_dark)['TEXT_1']};")
-        msg.setText("<h3>Need Help?</h3>"
-                    "If you encounter any bugs, need assistance troubleshooting the output, or want to request new features, please reach out to the development team:<br><br>"
-                    "✉️ <b>parardhadhar@gmail.com</b><br>"
-                    "✉️ <b>cabhinav@iisc.ac.in</b><br><br>"
-                    "<i>Please include your .ctf files and the console output log when reporting a bug.</i>")
-        msg.setIcon(QMessageBox.Icon.Information)
-        msg.exec()
-
-    def _show_about(self):
-        QMessageBox.about(self, "About ASTA Tool", 
-            "Automated Slip-Trace Analysis (ASTA) Tool will always be free. "
-            "Kindly cite [Article Details] if using this for your work, so that your colleagues may also know about this tool.\n\n"
-            "Credits:\n"
-            "Extreme Environment Materials Group (EEMG)\n"
-            "Indian Institute of Science (IISc), Bangalore\n"
-            "Parardha Dhar - UI Developer\n\n"
-            "GitHub: [Link to be added]\n"
-            "Usage instructions are located in the Read Me file.")
-
-    def _test_matlab(self):
-        try:
-            import matlab.engine
-            msg = QMessageBox(self)
-            msg.setWindowTitle("Success")
-            msg.setStyleSheet(f"background: {get_theme_colors(self._is_dark)['BG_CARD']}; color: {get_theme_colors(self._is_dark)['TEXT_1']};")
-            msg.setText("✅ <b>MATLAB Engine API for Python is properly installed and accessible!</b><br><br>The ASTA Tool application is ready to run.")
-            msg.setIcon(QMessageBox.Icon.Information)
-            msg.exec()
-        except ImportError:
-            msg = QMessageBox(self)
-            msg.setWindowTitle("Error")
-            msg.setStyleSheet(f"background: {get_theme_colors(self._is_dark)['BG_CARD']}; color: {get_theme_colors(self._is_dark)['TEXT_1']};")
-            msg.setText("❌ <b>MATLAB Engine API is NOT installed.</b><br><br>"
-                        "Please install it using your MATLAB installation:<br>"
-                        "<code>cd &lt;matlabroot&gt;/extern/engines/python</code><br>"
-                        "<code>python setup.py install</code>")
-            msg.setIcon(QMessageBox.Icon.Critical)
-            msg.exec()

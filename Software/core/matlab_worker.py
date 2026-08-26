@@ -1,5 +1,5 @@
 """
-ASTA Tool - MATLAB Engine Worker
+STRCRYST - MATLAB Engine Worker
 Runs the MATLAB analysis pipeline in a background QThread.
 """
 
@@ -150,8 +150,7 @@ class MatlabWorker(QThread):
             self.status_changed.emit("Running...")
             self._emit("\n⚙  Running startup_mtex…")
             try:
-                mtex_cmd = "try, startup_mtex; catch, addpath('D:\\Abhinav Chandraker (Pls do not delete)\\Zr alloy\\Zr slip trace\\codes\\MTEX\\mtex-6.0.0\\mtex-6.0.0'); startup_mtex; end"
-                self._eng.eval(mtex_cmd, nargout=0, stdout=stdout_stream, stderr=stderr_stream)
+                self._eng.eval("startup_mtex", nargout=0, stdout=stdout_stream, stderr=stderr_stream)
             except Exception as e:
                 raise RuntimeError(
                     "startup_mtex failed — MTEX toolbox may not be installed in MATLAB.\n\n"
@@ -191,7 +190,7 @@ class MatlabWorker(QThread):
                 self._emit("   [WARNING] run_analysis.m not found.")
                 self._emit("   Falling back to main.m — but main.m calls 'clear',")
                 self._emit("   which wipes the injected inputDir/outputBaseDir.")
-                self._emit("   SOLUTION: Copy run_analysis.m from the ASTA Tool")
+                self._emit("   SOLUTION: Copy run_analysis.m from the STRCRYST")
                 self._emit("   folder to your scripts folder for full path injection.")
                 self._emit(f"   Attempting: run('{safe_path}')")
             else:

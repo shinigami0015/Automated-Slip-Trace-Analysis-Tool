@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 """
 ASTA Tool -- Cinematic Intro Sequence
-Handles the Netflix-style intro, system diagnostics, and interactive manual.
+Handles the branded loading card, system diagnostics, and interactive startup guide.
 """
 import sys
 import os
@@ -13,73 +13,148 @@ from PyQt6.QtWidgets import (QWidget, QVBoxLayout, QHBoxLayout, QLabel,
                              QPushButton, QStackedWidget, QFrame)
 
 # ══════════════════════════════════════════════════════════════════════════════
-# 1. THE NETFLIX-STYLE INTRO
+# 1. THE ASTA LOADING CARD
 # ══════════════════════════════════════════════════════════════════════════════
 class CinematicIntro(QWidget):
+    """
+    Branded loading card showing the ASTA Tool identity with:
+      - Title: Automated Slip-Trace Analysis (ASTA) Tool
+      - Group & Institution credits
+      - UI Developer credit
+      - A Proceed button to continue into the diagnostics/main window
+    """
     finished = pyqtSignal()
 
     def __init__(self, parent=None):
         super().__init__(parent)
-        self.setStyleSheet("background: #000000;")
+        self.setStyleSheet("background: #0D1117;")
+        self._opacity = 0.0
+        self._proceed_visible = False
+
         v = QVBoxLayout(self)
-        v.setContentsMargins(60, 60, 60, 60)
-        v.setAlignment(Qt.AlignmentFlag.AlignCenter)
-        
-        t1 = QLabel("Automated Slip-Trace Analysis (ASTA) Tool")
-        t1.setStyleSheet("color: #FFFFFF; font-family: 'Segoe UI'; font-size: 24pt; font-weight: 300; letter-spacing: 2px;")
-        t1.setAlignment(Qt.AlignmentFlag.AlignCenter)
-        v.addWidget(t1)
-        
-        v.addSpacing(30)
-        
-        lines = [
-            "Kindly cite [Article Details] if using this for your work.",
-            "Extreme Environment Materials Group (EEMG)",
-            "Indian Institute of Science (IISc), Bangalore",
-            "Parardha Dhar - UI Developer"
-        ]
-        
-        for text_line in lines:
-            lbl = QLabel(text_line)
-            lbl.setStyleSheet("color: #0A84FF; font-family: 'Segoe UI'; font-size: 11pt; letter-spacing: 1px;")
-            lbl.setAlignment(Qt.AlignmentFlag.AlignCenter)
-            v.addWidget(lbl)
-            v.addSpacing(10)
-            
-        v.addSpacing(40)
-        
-        self.proceed_btn = QPushButton("Proceed")
-        self.proceed_btn.setFixedSize(140, 40)
-        self.proceed_btn.setStyleSheet("""
+        v.setContentsMargins(0, 0, 0, 0)
+        v.setSpacing(0)
+        v.addStretch(2)
+
+        card = QWidget()
+        card.setStyleSheet("background: transparent;")
+        card_v = QVBoxLayout(card)
+        card_v.setContentsMargins(60, 0, 60, 0)
+        card_v.setSpacing(0)
+
+        self._title_lbl = QLabel("Automated Slip-Trace Analysis (ASTA) Tool")
+        self._title_lbl.setAlignment(Qt.AlignmentFlag.AlignCenter)
+        self._title_lbl.setStyleSheet(
+            "color: #F5F5F7; font-family: 'Segoe UI'; font-size: 20pt; "
+            "font-weight: 300; letter-spacing: 1px;"
+        )
+        self._title_lbl.setWordWrap(True)
+        card_v.addWidget(self._title_lbl)
+        card_v.addSpacing(28)
+
+        sep = QFrame()
+        sep.setFrameShape(QFrame.Shape.HLine)
+        sep.setStyleSheet("background: #1E3A5F; max-height: 1px; border: none;")
+        card_v.addWidget(sep)
+        card_v.addSpacing(22)
+
+        cite_lbl = QLabel(
+            'Kindly cite <span style="color:#0A84FF;">[article details to be added]</span>'
+            ' if using this for your work.'
+        )
+        cite_lbl.setAlignment(Qt.AlignmentFlag.AlignCenter)
+        cite_lbl.setStyleSheet(
+            "color: #8E8E93; font-family: 'Segoe UI'; font-size: 9pt; font-style: italic;"
+        )
+        cite_lbl.setWordWrap(True)
+        card_v.addWidget(cite_lbl)
+        card_v.addSpacing(24)
+
+        group_lbl = QLabel("Extreme Environment Materials Group (EEMG)")
+        group_lbl.setAlignment(Qt.AlignmentFlag.AlignCenter)
+        group_lbl.setStyleSheet(
+            "color: #C7C7CC; font-family: 'Segoe UI'; font-size: 11pt; font-weight: 500;"
+        )
+        card_v.addWidget(group_lbl)
+        card_v.addSpacing(6)
+
+        inst_lbl = QLabel("Indian Institute of Science (IISc), Bangalore")
+        inst_lbl.setAlignment(Qt.AlignmentFlag.AlignCenter)
+        inst_lbl.setStyleSheet(
+            "color: #8E8E93; font-family: 'Segoe UI'; font-size: 10pt;"
+        )
+        card_v.addWidget(inst_lbl)
+        card_v.addSpacing(20)
+
+        dev_lbl = QLabel("Parardha Dhar \u2013 UI Developer")
+        dev_lbl.setAlignment(Qt.AlignmentFlag.AlignCenter)
+        dev_lbl.setStyleSheet(
+            "color: #545456; font-family: 'Segoe UI'; font-size: 8.5pt; letter-spacing: 0.5px;"
+        )
+        card_v.addWidget(dev_lbl)
+        card_v.addSpacing(36)
+
+        self._proceed_btn = QPushButton("Proceed  \u2192")
+        self._proceed_btn.setFixedHeight(44)
+        self._proceed_btn.setFixedWidth(180)
+        self._proceed_btn.setCursor(Qt.CursorShape.PointingHandCursor)
+        self._proceed_btn.setStyleSheet("""
             QPushButton {
-                background: #0A84FF;
-                color: white;
+                background: qlineargradient(x1:0 y1:0 x2:0 y2:1,
+                    stop:0 #0A84FF, stop:1 #0056B3);
+                color: #FFFFFF;
                 border: none;
-                border-radius: 6px;
+                border-radius: 10px;
                 font-family: 'Segoe UI';
                 font-size: 11pt;
-                font-weight: bold;
+                font-weight: 600;
+                padding: 0 20px;
             }
-            QPushButton:hover {
-                background: #0060FF;
-            }
+            QPushButton:hover { background: #0A84FF; }
+            QPushButton:pressed { background: #0056B3; }
         """)
-        self.proceed_btn.setCursor(Qt.CursorShape.PointingHandCursor)
-        self.proceed_btn.clicked.connect(self.finished.emit)
-        
-        h = QHBoxLayout()
-        h.addStretch()
-        h.addWidget(self.proceed_btn)
-        h.addStretch()
-        v.addLayout(h)
+        self._proceed_btn.setVisible(False)
+        self._proceed_btn.clicked.connect(self.finished.emit)
+
+        btn_row = QHBoxLayout()
+        btn_row.addStretch()
+        btn_row.addWidget(self._proceed_btn)
+        btn_row.addStretch()
+        card_v.addLayout(btn_row)
+
+        v.addWidget(card)
+        v.addStretch(3)
+
+        self._anim_fade = QPropertyAnimation(self, b"opacity_factor")
+        self._anim_fade.setDuration(1200)
+        self._anim_fade.setStartValue(0.0)
+        self._anim_fade.setEndValue(1.0)
+        self._anim_fade.setEasingCurve(QEasingCurve.Type.OutCubic)
+
+    @pyqtProperty(float)
+    def opacity_factor(self): return self._opacity
+    @opacity_factor.setter
+    def opacity_factor(self, v):
+        self._opacity = v
+        self.setWindowOpacity(v)
+        self.update()
 
     def start(self):
-        pass
+        self.setWindowOpacity(0.0)
+        self._anim_fade.start()
+        self._anim_fade.finished.connect(self._on_fade_done)
+
+    def _on_fade_done(self):
+        self._proceed_btn.setVisible(True)
 
 # ══════════════════════════════════════════════════════════════════════════════
 # 2. SYSTEM DIAGNOSTICS (PRE-FLIGHT)
 # ══════════════════════════════════════════════════════════════════════════════
-import winreg
+try:
+    import winreg
+    _HAS_WINREG = True
+except ImportError:
+    _HAS_WINREG = False
 
 class DiagnosticsCheck(QWidget):
     finished = pyqtSignal()
@@ -89,44 +164,53 @@ class DiagnosticsCheck(QWidget):
         self.setStyleSheet("background: #0D1117;")
         v = QVBoxLayout(self)
         v.setContentsMargins(60, 60, 60, 60)
-        
+
         self.title = QLabel("SYSTEM PRE-FLIGHT CHECK")
         self.title.setStyleSheet("color: #58A6FF; font-family: 'Consolas'; font-size: 14pt; letter-spacing: 2px;")
         v.addWidget(self.title)
-        
+
         self.log_area = QLabel("")
         self.log_area.setAlignment(Qt.AlignmentFlag.AlignTop | Qt.AlignmentFlag.AlignLeft)
         self.log_area.setStyleSheet("color: #8B949E; font-family: 'Consolas'; font-size: 11pt; line-height: 1.8;")
+        self.log_area.setTextFormat(Qt.TextFormat.RichText)
         v.addWidget(self.log_area, 1)
 
+        # ── IMPORTANT: steps use CALLABLES (not pre-computed values) ──────────
+        # This defers the matlab check until start() is called, after main.py's
+        # _auto_configure_matlab() has already patched _arch.txt.
         self._steps = [
-            ("Scanning Windows Registry for MATLAB...", 800, self._check_matlab_installed()),
-            ("Testing MATLAB Engine API for Python...", 1200, self._check_matlab_engine()),
-            ("Verifying MTEX Toolbox Linkage...", 700, "WARNING"), 
-            ("Loading ASTA Tool...ystallographic Core...", 500, True)
+            ("Scanning Windows Registry for MATLAB...", 800,  self._check_matlab_installed),
+            ("Testing MATLAB Engine API for Python...", 1200, self._check_matlab_engine),
+            ("Verifying MTEX Toolbox Linkage...",       700,  "WARNING"),
+            ("Loading Crystallographic Core...",        500,  True),
         ]
         self._current_step = 0
         self._log_text = ""
 
     def _check_matlab_installed(self):
-        """Scans Windows Registry to see if MATLAB is actually installed on the PC."""
+        """Scans Windows Registry to see if MATLAB is actually installed."""
         try:
-            # Check 64-bit registry
-            key = winreg.OpenKey(winreg.HKEY_LOCAL_MACHINE, r"SOFTWARE\MathWorks\MATLAB", 0, winreg.KEY_READ | winreg.KEY_WOW64_64KEY)
-            winreg.CloseKey(key)
-            return True
-        except OSError:
-            # Try checking common install paths
-            if os.path.exists(r"C:\Program Files\MATLAB"):
+            if _HAS_WINREG:
+                key = winreg.OpenKey(
+                    winreg.HKEY_LOCAL_MACHINE,
+                    r"SOFTWARE\MathWorks\MATLAB", 0,
+                    winreg.KEY_READ | winreg.KEY_WOW64_64KEY
+                )
+                winreg.CloseKey(key)
                 return True
-            return False
+        except Exception:
+            pass
+        return os.path.exists(r"C:\Program Files\MATLAB")
 
     def _check_matlab_engine(self):
-        """Checks if the user has specifically installed the matlab.engine python package."""
+        """
+        Checks if matlab.engine is importable.
+        Catches RuntimeError that occurs when _arch.txt has a bad/truncated path.
+        """
         try:
-            import matlab.engine # noqa
+            import matlab.engine  # noqa
             return True
-        except Exception:
+        except (ImportError, RuntimeError, Exception):
             return False
 
     def start(self):
@@ -134,23 +218,26 @@ class DiagnosticsCheck(QWidget):
 
     def _run_next_step(self):
         if self._current_step >= len(self._steps):
-            self._log_text += "\n\n<span style='color:#3FB950;'>▶ PRE-FLIGHT COMPLETE. LAUNCHING MANUAL...</span>"
+            self._log_text += "<br><span style='color:#3FB950;'>&#9654; PRE-FLIGHT COMPLETE. LAUNCHING STARTUP GUIDE...</span>"
             self.log_area.setText(self._log_text)
             QTimer.singleShot(1500, self.finished.emit)
             return
 
         msg, delay, status = self._steps[self._current_step]
-        self._log_text += f"> {msg} "
+        self._log_text += f"&gt; {msg} "
         self.log_area.setText(self._log_text)
 
         def _resolve():
-            if status is True:
-                self._log_text += "<span style='color:#3FB950;'>[✓ FOUND]</span><br>"
-            elif status == "WARNING":
-                self._log_text += "<span style='color:#E68A00;'>[⚠ DEFERRED TO RUNTIME]</span><br>"
+            # Resolve lazily: call the check function now (not at __init__ time)
+            resolved = status() if callable(status) else status
+
+            if resolved is True:
+                self._log_text += "<span style='color:#3FB950;'>[&#10003; FOUND]</span><br>"
+            elif resolved == "WARNING":
+                self._log_text += "<span style='color:#E68A00;'>[&#9888; DEFERRED TO RUNTIME]</span><br>"
             else:
-                self._log_text += "<span style='color:#FF7B72;'>[✖ MISSING]</span><br>"
-            
+                self._log_text += "<span style='color:#FF7B72;'>[&#10007; MISSING]</span><br>"
+
             self.log_area.setText(self._log_text)
             self._current_step += 1
             QTimer.singleShot(300, self._run_next_step)
@@ -158,7 +245,7 @@ class DiagnosticsCheck(QWidget):
         QTimer.singleShot(delay, _resolve)
 
 # ══════════════════════════════════════════════════════════════════════════════
-# 3. INTERACTIVE MANUAL CAROUSEL
+# 3. INTERACTIVE STARTUP GUIDE CAROUSEL
 # ══════════════════════════════════════════════════════════════════════════════
 class ManualPage(QWidget):
     def __init__(self, title, content, icon):
@@ -195,25 +282,28 @@ class InteractiveManual(QWidget):
         self.stack = QStackedWidget()
         self.stack.addWidget(ManualPage(
             "Welcome to ASTA Tool",
-            "ASTA Tool is an advanced UI wrapper for EBSD Slip Trace & Schmid Factor Analysis.\n\n"
+            "ASTA Tool is an advanced UI for EBSD Slip Trace & Schmid Factor Analysis.\n\n"
             "This software automates the generation of crystallographic slip trace maps and CSV datasets "
-            "directly from your .ctf files.", "💎"
+            "directly from your .ctf files.",
+            "\U0001f48e"
         ))
         self.stack.addWidget(ManualPage(
             "System Requirements",
             "To run the analysis, you MUST have installed:\n"
-            "1. MATLAB\n"
+            "1. MATLAB (R2021a or later)\n"
             "2. MTEX Toolbox (added to MATLAB path)\n"
             "3. MATLAB Engine API for Python\n\n"
-            "If missing, the UI will still work, but analysis will abort.", "⚙️"
+            "If missing, the UI will still work, but analysis will abort.",
+            "\u2699\ufe0f"
         ))
         self.stack.addWidget(ManualPage(
             "Quick Start Guide",
             "1. Select the folder containing the core .m scripts.\n"
             "2. Select the input folder containing your EBSD .ctf data.\n"
             "3. Choose an output folder.\n"
-            "4. Hit 'Run Analysis' and wait for the AAA magic.\n\n"
-            "Your settings will be automatically remembered for next time.", "🚀"
+            "4. Hit 'Run Analysis' and wait for the results.\n\n"
+            "Your settings will be automatically remembered for next time.",
+            "\U0001f680"
         ))
         v.addWidget(self.stack, 1)
 
@@ -222,21 +312,19 @@ class InteractiveManual(QWidget):
         h = QHBoxLayout(bottom)
         h.setContentsMargins(40, 0, 40, 20)
 
-        self.skip_btn = QPushButton("Skip Tutorial")
+        self.skip_btn = QPushButton("Skip Guide")
         self.skip_btn.setStyleSheet("color: #545456; background: transparent; border: none; font-size: 11pt;")
         self.skip_btn.setCursor(Qt.CursorShape.PointingHandCursor)
         self.skip_btn.clicked.connect(self.finished.emit)
         h.addWidget(self.skip_btn)
-
         h.addStretch()
 
-        self.dots = QLabel("● ○ ○")
+        self.dots = QLabel("\u25cf \u25cb \u25cb")
         self.dots.setStyleSheet("color: #3A3A3C; font-size: 14pt; letter-spacing: 4px;")
         h.addWidget(self.dots)
-
         h.addStretch()
 
-        self.next_btn = QPushButton("Next ➔")
+        self.next_btn = QPushButton("Next \u2794")
         self.next_btn.setStyleSheet("color: #0A84FF; font-weight: bold; background: transparent; border: none; font-size: 11pt;")
         self.next_btn.setCursor(Qt.CursorShape.PointingHandCursor)
         self.next_btn.clicked.connect(self._next)
@@ -248,11 +336,11 @@ class InteractiveManual(QWidget):
         i = self.stack.currentIndex()
         if i < self.stack.count() - 1:
             self.stack.setCurrentIndex(i + 1)
-            dots = ["○", "○", "○"]
-            dots[i+1] = "●"
+            dots = ["\u25cb", "\u25cb", "\u25cb"]
+            dots[i + 1] = "\u25cf"
             self.dots.setText(" ".join(dots))
             if i + 1 == self.stack.count() - 1:
-                self.next_btn.setText("Enter ASTA Tool ➔")
+                self.next_btn.setText("Enter ASTA Tool \u2794")
         else:
             self.finished.emit()
 
@@ -266,9 +354,7 @@ class IntroSequenceHost(QWidget):
         super().__init__()
         self.setWindowFlags(Qt.WindowType.FramelessWindowHint | Qt.WindowType.WindowStaysOnTopHint)
         self.setFixedSize(700, 460)
-        self.setStyleSheet("background: #000000; border-radius: 12px;")
-        
-        # Enable shadow / rounded corners manually if needed or let Windows do it.
+        self.setStyleSheet("background: #0D1117; border-radius: 12px;")
 
         layout = QVBoxLayout(self)
         layout.setContentsMargins(0, 0, 0, 0)
