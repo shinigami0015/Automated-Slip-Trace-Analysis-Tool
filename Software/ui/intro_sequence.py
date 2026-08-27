@@ -59,16 +59,15 @@ class CinematicIntro(QWidget):
         card_v.addSpacing(22)
 
         cite_lbl = QLabel(
-            'Kindly cite <span style="color:#0A84FF;">[article details to be added]</span>'
-            ' if using this for your work.'
+            'Kindly cite: <span style="color:#0A84FF;">Chandraker et al., Plasticity and damage initiation in textured Zr-2.5%Nb pressure tube material: A slip trace analysis-based study, Materials Science and Engineering: A, 2026</span> if using this for your work.'
         )
         cite_lbl.setAlignment(Qt.AlignmentFlag.AlignCenter)
         cite_lbl.setStyleSheet(
-            "color: #8E8E93; font-family: 'Segoe UI'; font-size: 9pt; font-style: italic;"
+            "color: #8E8E93; font-family: 'Segoe UI'; font-size: 8.5pt; font-style: italic;"
         )
         cite_lbl.setWordWrap(True)
         card_v.addWidget(cite_lbl)
-        card_v.addSpacing(24)
+        card_v.addSpacing(20)
 
         group_lbl = QLabel("Extreme Environment Materials Group (EEMG)")
         group_lbl.setAlignment(Qt.AlignmentFlag.AlignCenter)
@@ -84,15 +83,15 @@ class CinematicIntro(QWidget):
             "color: #8E8E93; font-family: 'Segoe UI'; font-size: 10pt;"
         )
         card_v.addWidget(inst_lbl)
-        card_v.addSpacing(20)
+        card_v.addSpacing(18)
 
-        dev_lbl = QLabel("Parardha Dhar \u2013 UI Developer")
+        dev_lbl = QLabel("Dhiraj Kori \u00b7 Parardha Dhar \u00b7 Abhinav Chandraker")
         dev_lbl.setAlignment(Qt.AlignmentFlag.AlignCenter)
         dev_lbl.setStyleSheet(
-            "color: #545456; font-family: 'Segoe UI'; font-size: 8.5pt; letter-spacing: 0.5px;"
+            "color: #58A6FF; font-family: 'Segoe UI'; font-size: 9pt; font-weight: 500; letter-spacing: 0.5px;"
         )
         card_v.addWidget(dev_lbl)
-        card_v.addSpacing(36)
+        card_v.addSpacing(28)
 
         self._proceed_btn = QPushButton("Proceed  \u2192")
         self._proceed_btn.setFixedHeight(44)
@@ -305,6 +304,16 @@ class InteractiveManual(QWidget):
             "Your settings will be automatically remembered for next time.",
             "\U0001f680"
         ))
+        self.stack.addWidget(ManualPage(
+            "About & Credits",
+            "Chandraker et al., Plasticity and damage initiation in textured Zr-2.5%Nb pressure tube material: "
+            "A slip trace analysis-based study, Materials Science and Engineering: A, 2026\n\n"
+            "\u2022 Core Algorithms & Numerical Implementation: Dhiraj Kori\n"
+            "\u2022 User Interface & Application Architecture: Parardha Dhar\n"
+            "\u2022 Code script and UI testing: Abhinav Chandraker\n\n"
+            "Extreme Environment Materials Group (EEMG)\nIndian Institute of Science (IISc), Bangalore",
+            "\U0001f4dc"
+        ))
         v.addWidget(self.stack, 1)
 
         bottom = QWidget()
@@ -319,7 +328,7 @@ class InteractiveManual(QWidget):
         h.addWidget(self.skip_btn)
         h.addStretch()
 
-        self.dots = QLabel("\u25cf \u25cb \u25cb")
+        self.dots = QLabel("\u25cf \u25cb \u25cb \u25cb")
         self.dots.setStyleSheet("color: #3A3A3C; font-size: 14pt; letter-spacing: 4px;")
         h.addWidget(self.dots)
         h.addStretch()
@@ -336,7 +345,7 @@ class InteractiveManual(QWidget):
         i = self.stack.currentIndex()
         if i < self.stack.count() - 1:
             self.stack.setCurrentIndex(i + 1)
-            dots = ["\u25cb", "\u25cb", "\u25cb"]
+            dots = ["\u25cb"] * self.stack.count()
             dots[i + 1] = "\u25cf"
             self.dots.setText(" ".join(dots))
             if i + 1 == self.stack.count() - 1:

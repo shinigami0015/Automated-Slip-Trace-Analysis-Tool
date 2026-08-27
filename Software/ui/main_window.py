@@ -521,12 +521,17 @@ class MainWindow(QMainWindow):
         bar.setFixedHeight(26)
         bl = QHBoxLayout(bar)
         bl.setContentsMargins(14, 0, 6, 0)
-        bl.setSpacing(10)
+        bl.setSpacing(12)
         
         self._theme_btn = QPushButton("🌙 Dark Mode")
         self._theme_btn.setObjectName("linkBtn")
         self._theme_btn.clicked.connect(self._toggle_theme)
         bl.addWidget(self._theme_btn)
+
+        self._about_btn = QPushButton("ℹ About")
+        self._about_btn.setObjectName("linkBtn")
+        self._about_btn.clicked.connect(self._show_about)
+        bl.addWidget(self._about_btn)
 
         bl.addStretch()
         lbl = QLabel("v1.1.0  ·  IISc Materials Lab")
@@ -535,6 +540,26 @@ class MainWindow(QMainWindow):
         grip = QSizeGrip(self)
         bl.addWidget(grip)
         return bar
+
+    def _show_about(self):
+        msg = QMessageBox(self)
+        msg.setWindowTitle("About ASTA Tool")
+        msg.setTextFormat(Qt.TextFormat.RichText)
+        msg.setText(
+            "<h3 style='color:#0A84FF; margin-bottom:4px;'>Automated Slip-Trace Analysis (ASTA) Tool</h3>"
+            "<p style='color:#8E8E93; font-size:9pt; font-style:italic;'>"
+            "Chandraker et al., Plasticity and damage initiation in textured Zr-2.5%Nb pressure tube material: "
+            "A slip trace analysis-based study, Materials Science and Engineering: A, 2026</p>"
+            "<hr style='border:1px solid #38383A;'>"
+            "<p style='line-height:1.6; font-size:9.5pt;'>"
+            "<b>Core Algorithms &amp; Numerical Implementation:</b> Dhiraj Kori<br>"
+            "<b>User Interface &amp; Application Architecture:</b> Parardha Dhar<br>"
+            "<b>Code script and UI testing:</b> Abhinav Chandraker<br><br>"
+            "<b>Extreme Environment Materials Group (EEMG)</b><br>"
+            "Indian Institute of Science (IISc), Bangalore</p>"
+        )
+        msg.setStandardButtons(QMessageBox.StandardButton.Ok)
+        msg.exec()
 
     def _switch_tab(self, idx: int):
         self._stack.setCurrentIndex(idx)
