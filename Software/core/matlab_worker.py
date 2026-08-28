@@ -97,12 +97,14 @@ class MatlabWorker(QThread):
             self._emit("⚙  Importing MATLAB Engine API…")
             try:
                 import matlab.engine  # noqa: F401
-            except ImportError:
+            except Exception as _me:
                 self.finished_err.emit(
-                    "MATLAB Engine API for Python is not installed.\n\n"
-                    "Please install it from your MATLAB installation:\n"
+                    "MATLAB Engine API for Python is not available.\n\n"
+                    "Please ensure MATLAB is installed and the Python Engine API\n"
+                    "has been set up from your MATLAB installation:\n"
                     "  cd <matlabroot>/extern/engines/python\n"
-                    "  python setup.py install"
+                    "  python setup.py install\n\n"
+                    f"Detail: {_me}"
                 )
                 return
 

@@ -12,6 +12,58 @@ from PyQt6.QtGui  import (QPainter, QColor, QFont, QFontMetrics, QBrush,
 from PyQt6.QtWidgets import (QWidget, QVBoxLayout, QHBoxLayout, QLabel, 
                              QPushButton, QStackedWidget, QFrame)
 
+
+def _patch_matlab_arch_txt():
+    """
+    Runs at module-import time (before any Qt widget is constructed).
+    Rewrites _internal/matlab/engine/_arch.txt with the MATLAB version that
+    is actually installed on this machine so that matlab/__init__.py can
+    locate the correct DLLs instead of crashing on hardcoded R2023a paths.
+
+    If no MATLAB installation is found the file is left untouched; the
+    later import attempt in _check_matlab_engine() already catches all
+    possible exceptions gracefully.
+    """
+    try:
+        import glob
+        # Locate _arch.txt relative to the running exe (frozen) or this file.
+        if getattr(sys, 'frozen', False):
+            base = os.path.dirname(sys.executable)
+        else:
+            base = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+
+        arch_txt = os.path.join(base, '_internal', 'matlab', 'engine', '_arch.txt')
+        if not os.path.exists(arch_txt):
+            # Fallback: look one level up from ui/
+            arch_txt = os.path.normpath(
+                os.path.join(os.path.dirname(__file__), '..', 'matlab', 'engine', '_arch.txt')
+            )
+        if not os.path.exists(arch_txt):
+            return  # Nothing to patch
+
+        # Find the newest MATLAB installation under Program Files
+        candidates = sorted(
+            glob.glob(r"C:\Program Files\MATLAB\R*"),
+            reverse=True          # newest release first (R2024b > R2024a > R2023b …)
+        )
+        for matlab_root in candidates:
+            bin_dir = os.path.join(matlab_root, 'bin', 'win64')
+            if not os.path.isdir(bin_dir):
+                continue
+            pyd_dir    = os.path.join(os.path.dirname(arch_txt), 'win64')
+            extern_bin = os.path.join(matlab_root, 'extern', 'bin', 'win64')
+            lines = ['win64\n', bin_dir + '\n', pyd_dir + '\n']
+            if os.path.isdir(extern_bin):
+                lines.append(extern_bin + '\n')
+            with open(arch_txt, 'w', encoding='utf-8') as fh:
+                fh.writelines(lines)
+            break  # patched successfully with the best candidate
+    except Exception:
+        pass  # Never crash the app due to _arch.txt patching
+
+
+_patch_matlab_arch_txt()
+
 # ══════════════════════════════════════════════════════════════════════════════
 # 1. THE ASTA LOADING CARD
 # ══════════════════════════════════════════════════════════════════════════════
@@ -204,12 +256,15 @@ class DiagnosticsCheck(QWidget):
     def _check_matlab_engine(self):
         """
         Checks if matlab.engine is importable.
-        Catches RuntimeError that occurs when _arch.txt has a bad/truncated path.
+        _patch_matlab_arch_txt() (called at module load) already rewrites
+        _arch.txt with the correct MATLAB version before we reach here.
+        We catch all exceptions so a wrong _arch.txt or a missing MATLAB
+        installation never crashes the application.
         """
         try:
             import matlab.engine  # noqa
             return True
-        except (ImportError, RuntimeError, Exception):
+        except Exception:          # covers ImportError, RuntimeError, OSError…
             return False
 
     def start(self):
