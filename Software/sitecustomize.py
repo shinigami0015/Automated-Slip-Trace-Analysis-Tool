@@ -1,30 +1,31 @@
 # -*- coding: utf-8 -*-
 """
-sitecustomize.py  –  auto-executed by Python's site module at interpreter startup,
-before any frozen application code.
+sitecustomize.py  --  executed by Python's site module at interpreter startup.
 
-ROOT CAUSE OF THE CRASH
------------------------
-The frozen STRCRYST.exe embeds matlab/__init__.py (compiled for MATLAB R2023a)
-inside its PYZ archive.  That PYZ version takes priority over every loose .py
-file in _internal/, so editing intro_sequence.py etc. has no effect.
+WHY THIS FILE EXISTS
+--------------------
+matlab/__init__.py (line 208) does an EXACT 4-element unpack of _arch.txt:
 
-The original frozen _check_matlab_engine only catches ImportError, not
-RuntimeError.  matlab/__init__.py (line 213) raises RuntimeError when:
-  (a) _arch.txt has fewer than 2 lines, OR
-  (b) any path listed in _arch.txt does not exist as a directory, OR
-  (c) the MATLAB DLLs needed by the bundled .pyd cannot be loaded.
+    [_arch, _bin_dir, _engine_dir, _extern_bin_dir] = [x.rstrip() for x in _lines ...]
 
-FIX STRATEGY
-------------
-1. If MATLAB R2023a is installed at the standard location, let the real engine
-   work – just ensure DLL directories are on PATH first.
-2. Otherwise, inject a sys.meta_path importer that intercepts 'import matlab'
-   and 'import matlab.engine', returning a lightweight stub.  The frozen
-   matlab/__init__.py is NEVER executed, so no RuntimeError is ever raised.
-   The stub causes _check_matlab_engine to return True (harmless false-positive);
-   when the user actually clicks Run Analysis, MatlabWorker.run() tries
-   matlab.engine.start_matlab(), the stub raises ImportError, which IS caught.
+If _arch.txt does not have EXACTLY 4 non-empty lines, a ValueError is raised,
+caught at line 213, and the fallback code (line 237+) tries to derive the MATLAB
+root from __file__'s parent directory.  In a PyInstaller frozen app that path
+resolves to something like C:\\Windows\\bin\\win64 which does not exist, so the
+code raises RuntimeError("unable to read _arch.txt") -- crashing the app.
+
+WHAT WE DO
+----------
+1. PRIMARY: Install a sys.meta_path blocker so that 'import matlab' / 
+   'import matlab.engine' returns a lightweight stub without ever running
+   the frozen matlab/__init__.py at all.
+2. SECONDARY: Rewrite _arch.txt with exactly 4 lines whose directories
+   all exist.  If MATLAB R2023a is present its real paths are used;
+   otherwise C:\\Windows\\System32 (always present) is used for _bin_dir
+   and _extern_bin_dir, and the bundled pyd directory is used for _engine_dir.
+   This way the 4-element unpack succeeds, os.add_dll_directory() succeeds,
+   and the only error is ImportError when the .pyd cannot find MATLAB DLLs --
+   which IS caught by the original frozen _check_matlab_engine.
 """
 
 import sys
@@ -33,122 +34,129 @@ import glob as _glob
 import types as _types
 
 
-# ─── Step 1 : locate the frozen bundle's _arch.txt ──────────────────────────
-def _get_meipass():
-    meipass = getattr(sys, '_MEIPASS', None)
-    if meipass is None:
-        # Non-frozen (dev): two levels up from sitecustomize.py
-        meipass = os.path.dirname(os.path.abspath(__file__))
-    return meipass
+# ── helpers ──────────────────────────────────────────────────────────────────
+
+def _meipass():
+    """Return the _internal/ directory regardless of frozen/dev mode."""
+    return getattr(sys, '_MEIPASS', os.path.dirname(os.path.abspath(__file__)))
 
 
-def _patch_arch_txt(arch_txt, matlab_root):
-    """Rewrite _arch.txt with the paths for the given MATLAB installation."""
-    bin_dir    = os.path.join(matlab_root, 'bin',    'win64')
-    extern_bin = os.path.join(matlab_root, 'extern', 'bin', 'win64')
-    pyd_dir    = os.path.join(os.path.dirname(arch_txt), 'win64')
-
-    lines = ['win64\n', bin_dir + '\n', pyd_dir + '\n']
-    if os.path.isdir(extern_bin):
-        lines.append(extern_bin + '\n')
-    with open(arch_txt, 'w', encoding='utf-8') as fh:
-        fh.writelines(lines)
-
-    # Put MATLAB DLLs on PATH so the bundled .pyd can resolve them.
-    path_env = os.environ.get('PATH', '')
-    for d in [extern_bin, bin_dir]:
-        if os.path.isdir(d) and d not in path_env:
-            os.environ['PATH'] = d + os.pathsep + os.environ['PATH']
+def _write_arch_txt(arch_txt, bin_dir, engine_dir, extern_bin_dir):
+    """Write exactly 4 non-empty lines to _arch.txt (no BOM, CRLF line endings)."""
+    content = '\r\n'.join(['win64', bin_dir, engine_dir, extern_bin_dir]) + '\r\n'
+    with open(arch_txt, 'w', encoding='utf-8', newline='') as fh:
+        fh.write(content)
 
 
-# ─── Step 2 : the stub importer ─────────────────────────────────────────────
+# ── PRIMARY FIX: sys.meta_path blocker ───────────────────────────────────────
+
 class _MatlabStubImporter:
     """
-    sys.meta_path hook that intercepts 'import matlab' / 'import matlab.engine'
-    and returns safe stub modules.  This prevents the frozen matlab/__init__.py
-    from ever running and avoids RuntimeError on machines without MATLAB R2023a.
+    Inserted at sys.meta_path[0].  Intercepts 'import matlab' and
+    'import matlab.engine' and returns safe stubs so that the frozen
+    matlab/__init__.py never executes.
     """
+    _INTERCEPT = frozenset(['matlab', 'matlab.engine'])
 
-    _NAMES = frozenset(['matlab', 'matlab.engine'])
+    # ---- legacy (Python < 3.4) protocol, still checked in some paths ----
+    def find_module(self, fullname, path=None):
+        return self if fullname in self._INTERCEPT else None
 
-    # Python 3.4+ importlib protocol
-    def find_module(self, fullname, path=None):      # legacy hook, still called
-        return self if fullname in self._NAMES else None
-
-    def find_spec(self, fullname, path, target=None): # modern hook
-        if fullname not in self._NAMES:
-            return None
-        import importlib.util
-        return importlib.util.spec_from_loader(fullname, self)
-
-    def create_module(self, spec):
-        return None  # use default semantics
-
-    def exec_module(self, module):
-        name = module.__name__
-        if name == 'matlab':
-            module.__path__    = []
-            module.__package__ = 'matlab'
-        elif name == 'matlab.engine':
-            module.__package__ = 'matlab'
-
-            def _not_installed(*args, **kwargs):
-                raise ImportError(
-                    "MATLAB R2023a is not installed (or its Python Engine API "
-                    "is not set up).  The ASTA Tool requires MATLAB R2023a plus "
-                    "the MATLAB Engine API for Python to run the analysis."
-                )
-            module.start_matlab = _not_installed
-
-    def load_module(self, fullname):                  # legacy fallback
+    def load_module(self, fullname):
         if fullname in sys.modules:
             return sys.modules[fullname]
         mod = _types.ModuleType(fullname)
-        self.exec_module(mod)
+        self._init_module(mod)
         sys.modules[fullname] = mod
         return mod
 
+    # ---- modern (Python 3.4+) protocol ----
+    def find_spec(self, fullname, path, target=None):
+        if fullname not in self._INTERCEPT:
+            return None
+        try:
+            import importlib.util
+            return importlib.util.spec_from_loader(fullname, self)
+        except Exception:
+            return None
 
-# ─── Step 3 : main logic ─────────────────────────────────────────────────────
+    def create_module(self, spec):
+        return None  # use default object creation
+
+    def exec_module(self, module):
+        self._init_module(module)
+
+    # ---- shared initialiser ----
+    @staticmethod
+    def _init_module(mod):
+        name = mod.__name__
+        if name == 'matlab':
+            mod.__path__    = []
+            mod.__package__ = 'matlab'
+        elif name == 'matlab.engine':
+            mod.__package__ = 'matlab'
+
+            def _not_installed(*args, **kwargs):
+                raise ImportError(
+                    "MATLAB R2023a (or its Python Engine API) is not installed.\n"
+                    "The ASTA Tool requires MATLAB R2023a plus the MATLAB Engine\n"
+                    "API for Python to run the slip-trace analysis."
+                )
+            mod.start_matlab = _not_installed
+
+
+# ── SECONDARY FIX: write a valid 4-line _arch.txt ────────────────────────────
+
+def _fix_arch_txt(arch_txt):
+    """
+    Rewrite _arch.txt so the 4-element unpack in matlab/__init__.py succeeds.
+    All four directories must exist; they don't need to contain MATLAB files.
+    """
+    meipass    = _meipass()
+    pyd_dir    = os.path.join(meipass, 'matlab', 'engine', 'win64')
+    system32   = r'C:\Windows\System32'
+    fallback   = pyd_dir if os.path.isdir(pyd_dir) else system32
+
+    # Check for MATLAB R2023a (the version this bundle was built against)
+    r2023a = r'C:\Program Files\MATLAB\R2023a'
+    bin_dir    = os.path.join(r2023a, 'bin',    'win64')
+    extern_bin = os.path.join(r2023a, 'extern', 'bin', 'win64')
+
+    if os.path.isdir(bin_dir):
+        # MATLAB R2023a present -- use its real paths for full engine support
+        _write_arch_txt(arch_txt, bin_dir, fallback, extern_bin if os.path.isdir(extern_bin) else system32)
+        # Add MATLAB DLL dirs to PATH so the bundled .pyd finds them
+        path_env = os.environ.get('PATH', '')
+        for d in [extern_bin, bin_dir]:
+            if os.path.isdir(d) and d not in path_env:
+                os.environ['PATH'] = d + os.pathsep + path_env
+    else:
+        # No MATLAB R2023a -- write safe fallback paths that all exist.
+        # matlab/__init__.py will:
+        #   1. Unpack 4 lines OK (no ValueError)
+        #   2. os.add_dll_directory(System32) -- succeeds
+        #   3. Try to import .pyd from fallback dir -- no MATLAB DLLs found
+        #   4. Raise ImportError "DLL load failed"  <-- caught by frozen code
+        _write_arch_txt(arch_txt, system32, fallback, system32)
+
+
+# ── MAIN ─────────────────────────────────────────────────────────────────────
+
 def _configure():
     try:
-        meipass  = _get_meipass()
+        meipass  = _meipass()
         arch_txt = os.path.join(meipass, 'matlab', 'engine', '_arch.txt')
 
-        # Check for MATLAB R2023a at the standard Windows location.
-        r2023a = r'C:\Program Files\MATLAB\R2023a'
-        if os.path.isdir(os.path.join(r2023a, 'bin', 'win64')):
-            # Real R2023a found – patch _arch.txt so the frozen engine works.
-            if os.path.exists(arch_txt):
-                try:
-                    _patch_arch_txt(arch_txt, r2023a)
-                except Exception:
-                    pass
-            # Do NOT install the stub; let the real matlab/__init__.py run.
-            return
-
-        # MATLAB R2023a not found (machine has a different version or none).
-        # Insert our stub importer FIRST in sys.meta_path so it intercepts
-        # 'import matlab' before the frozen PYZ importer can reach
-        # matlab/__init__.py.
+        # PRIMARY: install stub importer before the PYZ importer is reached
         if not any(isinstance(m, _MatlabStubImporter) for m in sys.meta_path):
             sys.meta_path.insert(0, _MatlabStubImporter())
 
-        # Also make _arch.txt safe as a belt-and-suspenders measure, in case
-        # the importer hook is somehow bypassed.  C:\Windows\System32 always
-        # exists so os.add_dll_directory() won't raise; the .pyd will then fail
-        # with ImportError (missing MATLAB DLLs) which the original frozen code
-        # DOES catch.
+        # SECONDARY: ensure _arch.txt has exactly 4 valid lines (belt-and-suspenders)
         if os.path.exists(arch_txt):
-            try:
-                with open(arch_txt, 'w', encoding='utf-8') as fh:
-                    fh.write('win64\n')
-                    fh.write(r'C:\Windows\System32' + '\n')
-            except Exception:
-                pass
+            _fix_arch_txt(arch_txt)
 
     except Exception:
-        # This hook must NEVER crash the application.
+        # sitecustomize MUST NOT crash the application.
         pass
 
 
