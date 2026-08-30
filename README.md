@@ -1,8 +1,8 @@
-# Automated Slip-Trace Analysis (ASTA) Tool
+ï»¿# Automated Slip-Trace Analysis (ASTA) Tool
 
 An automated computational framework based on MTEX, and a desktop software application for crystallographic slip trace identification and Schmid factor mapping, and deformation compatibility analysis in dual-phase ($\alpha$-HCP / $\beta$-BCC) metallic alloys. 
 
-ASTA toolÂ will always be free. Kindly cite (article name and doi) if using this for your work, so that your colleagues may also know about this tool.
+ASTA toolÃ‚Â will always be free. Kindly cite (article name and doi) if using this for your work, so that your colleagues may also know about this tool.
 
 ![MATLAB](https://img.shields.io/badge/MATLAB-R2021a%2B-0076A8?style=for-the-badge&logo=mathworks&logoColor=white)
 ![MTEX](https://img.shields.io/badge/MTEX_Toolbox-Crystallography-4B0082?style=for-the-badge)
@@ -193,28 +193,28 @@ To run the analysis scripts and the ASTA Tool desktop application, ensure the fo
 ```
 Automated-Slip-Trace-Analysis-Tool/
 +-- Code files/
-¦   +-- main.m                            # Primary MATLAB execution script
-¦   +-- EBSD_processing.m                 # EBSD import, filtering, and grain reconstruction
-¦   +-- slip_trace.m                      # Theoretical slip trace calculation module
-¦   +-- activated_slips.m                 # Identification of active slip system families
-¦   +-- computeSchmidFactors.m            # Schmid factor tensor calculation
-¦   +-- lustermorris.m                    # Luster-Morris (m') compatibility analysis
-¦   +-- slip_systems.m                    # Definition of HCP and BCC slip system geometries
-¦   +-- slipsystemdist.m                  # Statistical distribution compilation
-¦   +-- match_slip_label.m                # Indexing helper (3-index BCC / 4-index HCP)
-¦   +-- angle_with_horizontal.m           # Geometric orientation helper functions
-¦   +-- cosTheta.m                        # Vector angular metric calculator
-¦   +-- modifyctf.m                       # CTF data format normalization helper
-¦   +-- EBSD_crystal_orientation_image.m  # Orientation map rendering helper
+Â¦   +-- main.m                            # Primary MATLAB execution script
+Â¦   +-- EBSD_processing.m                 # EBSD import, filtering, and grain reconstruction
+Â¦   +-- slip_trace.m                      # Theoretical slip trace calculation module
+Â¦   +-- activated_slips.m                 # Identification of active slip system families
+Â¦   +-- computeSchmidFactors.m            # Schmid factor tensor calculation
+Â¦   +-- lustermorris.m                    # Luster-Morris (m') compatibility analysis
+Â¦   +-- slip_systems.m                    # Definition of HCP and BCC slip system geometries
+Â¦   +-- slipsystemdist.m                  # Statistical distribution compilation
+Â¦   +-- match_slip_label.m                # Indexing helper (3-index BCC / 4-index HCP)
+Â¦   +-- angle_with_horizontal.m           # Geometric orientation helper functions
+Â¦   +-- cosTheta.m                        # Vector angular metric calculator
+Â¦   +-- modifyctf.m                       # CTF data format normalization helper
+Â¦   +-- EBSD_crystal_orientation_image.m  # Orientation map rendering helper
 +-- Input files/                          # Sample raw EBSD data (.ctf)
 +-- Output/                               # Processed output maps, PNGs, and CSVs
 +-- matlab_engine_install/                # MATLAB Engine API for Python install packages
 +-- Software/                             # Python PyQt6 GUI application codebase
-¦   +-- main.py                           # Main entry point for the desktop GUI
-¦   +-- run_analysis.m                    # MATLAB wrapper script for UI injection
-¦   +-- ui/                               # Desktop UI components and layout widgets
-¦   +-- core/                             # Background process worker management
-¦   +-- ASTA Tool.spec                    # PyInstaller packaging configuration
+Â¦   +-- main.py                           # Main entry point for the desktop GUI
+Â¦   +-- run_analysis.m                    # MATLAB wrapper script for UI injection
+Â¦   +-- ui/                               # Desktop UI components and layout widgets
+Â¦   +-- core/                             # Background process worker management
+Â¦   +-- ASTA Tool.spec                    # PyInstaller packaging configuration
 +-- ASTA_Tool_Final_Release.zip           # Pre-built Portable Windows Executable
 ```
 
@@ -228,7 +228,7 @@ For end-users who prefer a direct desktop app experience without manually managi
 
 1. Navigate to the distributed executable directory:
    ```cmd
-   cd "STARTCRYST SOFTWARE v1.0/Software Files/ASTA Tool/dist/ASTA Tool"
+   cd "Software/ASTA_Application"
    ```
 2. Double-click or launch `ASTA Tool.exe` from the command line:
    ```cmd
@@ -245,7 +245,7 @@ For end-users who prefer a direct desktop app experience without manually managi
 #### Packaging `ASTA Tool.exe` from Source
 If you modify the Python UI source code and wish to recompile the standalone `.exe` binary:
 ```bash
-cd "STARTCRYST SOFTWARE v1.0/Software Files/ASTA Tool"
+cd "Software"
 pip install pyinstaller
 pyinstaller ASTA Tool.spec
 ```
@@ -257,7 +257,7 @@ The compiled executable package will be created in `dist/ASTA Tool/`.
 
 1. Open a terminal or command prompt and navigate to the application directory:
    ```bash
-   cd "STARTCRYST SOFTWARE v1.0/Software Files/ASTA Tool"
+   cd "Software"
    ```
 2. Launch the application:
    ```bash
