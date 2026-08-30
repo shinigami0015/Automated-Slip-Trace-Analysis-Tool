@@ -1,7 +1,7 @@
 ASTA Tool — Slip Trace & Schmid Factor Analysis
 ==============================================
 Desktop UI Wrapper for MATLAB EBSD Analysis Pipeline
-Version 1.0.0
+Version 1.1.0
 
 
 PREREQUISITES
@@ -54,8 +54,9 @@ USAGE
 1. Launch ASTA Tool.
 
 2. Scripts Folder:
-   Browse to the folder containing all your .m files:
-   - main.m (or run_analysis.m)
+   You can leave this box COMPLETELY EMPTY to use the bundled internal scripts.
+   Alternatively, browse to the folder containing your .m files if you want to use custom scripts:
+   - run_analysis.m
    - EBSD_processing.m
    - slip_trace.m
    - activated_slips.m
@@ -114,25 +115,22 @@ DEVELOPER NOTES
 
 - The app injects inputDir, outputBaseDir, loadDirChoice, ca_ratio, and
   crystalSystemMode into the MATLAB workspace BEFORE running any script.
-  Do NOT hardcode these paths in main.m — the injection overrides them.
-
-- If run_analysis.m exists in the scripts folder, it takes priority over
-  main.m. You can rename main.m to run_analysis.m or create a thin wrapper.
+  Do NOT hardcode these paths in run_analysis.m — the injection overrides them.
 
 - The MATLAB engine is run in a background QThread so the UI remains
   responsive during analysis.
 
 - To package as .exe:
     pip install pyinstaller
-    pyinstaller ASTA Tool.spec
+    pyinstaller ASTA.spec
 
 
 PACKAGING (for distribution)
 ─────────────────────────────────────────────────────────────────────────────
 
-  cd ASTA Tool
+  cd "ASTA Tool"
   pip install -r requirements.txt
-  pyinstaller ASTA Tool.spec
+  pyinstaller ASTA.spec
 
   The distributable will be in:  dist/ASTA Tool/
 
@@ -144,8 +142,8 @@ TROUBLESHOOTING
   → Follow step 3 in Prerequisites above.
 
 "startup_mtex failed / MTEX not found"
-  → Ensure MTEX is installed in MATLAB. Run startup_mtex in MATLAB manually
-    to verify. Add the MTEX path to your MATLAB startup.m if needed.
+  → Ensure MTEX is installed in MATLAB. The UI will pop up a window asking you to 
+    select your MTEX installation folder if it cannot find it automatically.
 
 "No .ctf files found"
   → Ensure the input folder contains at least one file ending in .ctf
@@ -159,4 +157,4 @@ CONTACT
 ─────────────────────────────────────────────────────────────────────────────
 
 IISc Materials Science Lab
-Built with ASTA Tool v1.0 — PyQt6 + MATLAB Engine API
+Built with ASTA Tool v1.1 — PyQt6 + MATLAB Engine API

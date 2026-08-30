@@ -1,8 +1,8 @@
 % =========================================================================
-% run_analysis.m  — STRCRYST UI Wrapper Entry Point
+% run_analysis.m  — ASTA Tool UI Wrapper Entry Point
 % =========================================================================
 %
-% This script is called by the STRCRYST Python UI via:
+% This script is called by the ASTA Tool Python UI via:
 %   eng.eval('run_analysis', nargout=0)
 %
 % The following variables are INJECTED into the workspace by the Python
@@ -41,8 +41,14 @@ if exist('check_mtex', 'file') == 0
     try
         startup_mtex
     catch
-        addpath('D:\Abhinav Chandraker (Pls do not delete)\Zr alloy\Zr slip trace\codes\MTEX\mtex-6.0.0\mtex-6.0.0');
-        startup_mtex
+        % Prompt client/user for MTEX folder if not in path
+        mtex_path = uigetdir('', 'Please select your MTEX installation folder (e.g., mtex-7.0.0)');
+        if mtex_path ~= 0
+            addpath(mtex_path);
+            startup_mtex
+        else
+            error('MTEX is required to run this analysis.');
+        end
     end
 end
 clc;

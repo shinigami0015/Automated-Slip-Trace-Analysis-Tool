@@ -10,8 +10,7 @@ a = Analysis(
     datas=[
         ('ui/*.py', 'ui'),
         ('core/*.py', 'core'),
-        ('run_analysis.m', '.'),
-        ('C:/Users/Smart/AppData/Roaming/Python/Python39/site-packages/matlab/engine/_arch.txt', 'matlab/engine')
+        ('*.m', '.')
     ],
     hiddenimports=['matlab', 'matlab.engine'],
     hookspath=[],

@@ -1,8 +1,8 @@
 % =========================================================================
-% run_analysis.m  — STRCRYST UI Wrapper Entry Point
+% run_analysis.m  — ASTA Tool UI Wrapper Entry Point
 % =========================================================================
 %
-% This script is called by the STRCRYST Python UI via:
+% This script is called by the ASTA Tool Python UI via:
 %   eng.eval('run_analysis', nargout=0)
 %
 % The following variables are INJECTED into the workspace by the Python

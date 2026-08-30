@@ -1,5 +1,5 @@
 """
-ASTA Tool - MATLAB Engine Worker
+STRCRYST - MATLAB Engine Worker
 Runs the MATLAB analysis pipeline in a background QThread.
 """
 
@@ -62,6 +62,11 @@ class MatlabWorker(QThread):
         parent=None,
     ):
         super().__init__(parent)
+        if not scripts_folder:
+            if hasattr(sys, '_MEIPASS'):
+                scripts_folder = sys._MEIPASS
+            else:
+                scripts_folder = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
         self.scripts_folder    = scripts_folder
         self.input_folder      = input_folder
         self.output_folder     = output_folder
@@ -97,12 +102,14 @@ class MatlabWorker(QThread):
             self._emit("⚙  Importing MATLAB Engine API…")
             try:
                 import matlab.engine  # noqa: F401
-            except ImportError:
+            except Exception as _me:
                 self.finished_err.emit(
-                    "MATLAB Engine API for Python is not installed.\n\n"
-                    "Please install it from your MATLAB installation:\n"
+                    "MATLAB Engine API for Python is not available.\n\n"
+                    "Please ensure MATLAB is installed and the Python Engine API\n"
+                    "has been set up from your MATLAB installation:\n"
                     "  cd <matlabroot>/extern/engines/python\n"
-                    "  python setup.py install"
+                    "  python setup.py install\n\n"
+                    f"Detail: {_me}"
                 )
                 return
 
@@ -146,29 +153,8 @@ class MatlabWorker(QThread):
             self.progress.emit(20)
             self._check_abort()
 
-            # ── 5. startup_mtex ────────────────────────────────────────────────
+            # ── 5. Run main analysis script ────────────────────────────────────
             self.status_changed.emit("Running...")
-            self._emit("\n⚙  Running startup_mtex…")
-            try:
-                mtex_cmd = "try, startup_mtex; catch, addpath('D:\\Abhinav Chandraker (Pls do not delete)\\Zr alloy\\Zr slip trace\\codes\\MTEX\\mtex-6.0.0\\mtex-6.0.0'); startup_mtex; end"
-                self._eng.eval(mtex_cmd, nargout=0, stdout=stdout_stream, stderr=stderr_stream)
-            except Exception as e:
-                raise RuntimeError(
-                    "startup_mtex failed — MTEX toolbox may not be installed in MATLAB.\n\n"
-                    "Please install MTEX from: https://mtex-toolbox.github.io/\n\n"
-                    f"MATLAB error: {e}"
-                ) from e
-            self.progress.emit(30)
-            self._emit("✔  MTEX initialised successfully.")
-            self._check_abort()
-
-            # ── 6. Clear existing workspace vars that main.m would set ─────────
-            self._emit("\n⚙  Re-injecting variables (post startup_mtex reset)…")
-            self._eng.workspace["inputDir"]          = self.input_folder
-            self._eng.workspace["outputBaseDir"]     = self.output_folder
-            self._eng.workspace["loadDirChoice"]     = self.loading_direction
-            self._eng.workspace["ca_ratio"]          = float(self.ca_ratio)
-            self._eng.workspace["crystalSystemMode"] = float(cs_map.get(self.crystal_system, 0))
 
             # ── 7. Run main analysis script ────────────────────────────────────
             self._emit("\n⚙  Executing run_analysis (main.m pipeline)…")
@@ -191,7 +177,7 @@ class MatlabWorker(QThread):
                 self._emit("   [WARNING] run_analysis.m not found.")
                 self._emit("   Falling back to main.m — but main.m calls 'clear',")
                 self._emit("   which wipes the injected inputDir/outputBaseDir.")
-                self._emit("   SOLUTION: Copy run_analysis.m from the ASTA Tool")
+                self._emit("   SOLUTION: Copy run_analysis.m from the STRCRYST")
                 self._emit("   folder to your scripts folder for full path injection.")
                 self._emit(f"   Attempting: run('{safe_path}')")
             else:

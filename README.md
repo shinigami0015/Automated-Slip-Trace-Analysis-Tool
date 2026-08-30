@@ -55,7 +55,7 @@ The repository includes both modular **MATLAB scripts** utilizing the MTEX toolb
 
 ```mermaid
 graph TD
-    subgraph Frontend["STRCRYST Desktop UI (Python / PyQt6)"]
+    subgraph Frontend["ASTA Tool Desktop UI (Python / PyQt6)"]
         UI["Main Graphical Window"]
         Config["Parameter Selection: Load Vector, c/a Ratio, Phase Mode"]
         Worker["Asynchronous Background Worker (QThread)"]
@@ -149,7 +149,7 @@ flowchart LR
 ## Release Notes
 
 ### Version 1.0.0
-* **Graphical User Interface Introduced:** Developed the STRCRYST desktop application using PyQt6 for streamlined workflow setup and control without requiring direct script editing.
+* **Graphical User Interface Introduced:** Developed the ASTA Tool desktop application using PyQt6 for streamlined workflow setup and control without requiring direct script editing.
 * **Asynchronous MATLAB Engine Integration:** Integrated Python-MATLAB Engine API execution within background QThread workers, ensuring smooth UI performance during compute-intensive tasks.
 * **Interactive Output Gallery:** Added interactive image previewing and thumbnail generation for generated EBSD maps, slip trace figures, and IPDF key plots.
 * **Dynamic Parameter Configuration:** Enabled runtime selection for loading direction (X, Y, Z), custom axial ratio ($c/a$), and crystal phase modes (Dual-phase HCP+BCC, HCP-only, or BCC-only).
@@ -159,7 +159,7 @@ flowchart LR
 
 ## Prerequisites
 
-To run the analysis scripts and the STRCRYST desktop application, ensure the following software components are installed:
+To run the analysis scripts and the ASTA Tool desktop application, ensure the following software components are installed:
 
 1. **MATLAB** (R2021a or later)
    * MathWorks MATLAB environment.
@@ -167,7 +167,7 @@ To run the analysis scripts and the STRCRYST desktop application, ensure the fol
    * Download and install from [mtex-toolbox.github.io](https://mtex-toolbox.github.io/).
    * Initialize in MATLAB by running `startup_mtex` prior to first run.
 3. **Python** (Version 3.9 or later)
-   * Python runtime for executing the STRCRYST application wrapper.
+   * Python runtime for executing the ASTA Tool application wrapper.
 4. **PyQt6**
    * Install via pip:
      ```bash
@@ -222,19 +222,19 @@ Automated-Slip-Trace-Analysis-Tool/
 
 ## Usage Guide
 
-### Method 1: Running the Standalone Executable (`STRCRYST.exe`)
+### Method 1: Running the Standalone Executable (`ASTA Tool.exe`)
 
 For end-users who prefer a direct desktop app experience without manually managing Python dependencies:
 
 1. Navigate to the distributed executable directory:
    ```cmd
-   cd "STARTCRYST SOFTWARE v1.0/Software Files/STRCRYST/dist/STRCRYST"
+   cd "STARTCRYST SOFTWARE v1.0/Software Files/ASTA Tool/dist/ASTA Tool"
    ```
-2. Double-click or launch `STRCRYST.exe` from the command line:
+2. Double-click or launch `ASTA Tool.exe` from the command line:
    ```cmd
-   STRCRYST.exe
+   ASTA Tool.exe
    ```
-3. In the STRCRYST application interface:
+3. In the ASTA Tool application interface:
    * Select the **Scripts Folder** containing your `.m` script files.
    * Select the **Input Folder** containing `.ctf` format EBSD files.
    * Select the **Output Folder** for saving figures and CSV data.
@@ -242,14 +242,14 @@ For end-users who prefer a direct desktop app experience without manually managi
    * Click **Run Analysis**.
 4. Monitor progress in the real-time console log and inspect output maps in the built-in image gallery.
 
-#### Packaging `STRCRYST.exe` from Source
+#### Packaging `ASTA Tool.exe` from Source
 If you modify the Python UI source code and wish to recompile the standalone `.exe` binary:
 ```bash
-cd "STARTCRYST SOFTWARE v1.0/Software Files/STRCRYST"
+cd "STARTCRYST SOFTWARE v1.0/Software Files/ASTA Tool"
 pip install pyinstaller
-pyinstaller STRCRYST.spec
+pyinstaller ASTA Tool.spec
 ```
-The compiled executable package will be created in `dist/STRCRYST/`.
+The compiled executable package will be created in `dist/ASTA Tool/`.
 
 ---
 
@@ -257,7 +257,7 @@ The compiled executable package will be created in `dist/STRCRYST/`.
 
 1. Open a terminal or command prompt and navigate to the application directory:
    ```bash
-   cd "STARTCRYST SOFTWARE v1.0/Software Files/STRCRYST"
+   cd "STARTCRYST SOFTWARE v1.0/Software Files/ASTA Tool"
    ```
 2. Launch the application:
    ```bash

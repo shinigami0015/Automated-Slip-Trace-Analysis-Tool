@@ -19,7 +19,7 @@ if exist('check_mtex', 'file') == 0
     end
 end
 % 
-% NOTE: Paths and parameters are now dynamically injected by STRCRYST UI
+% NOTE: Paths and parameters are now dynamically injected by ASTA Tool UI
 % via run_analysis.m. Do not clear the workspace or hardcode paths here.
 % 
 
