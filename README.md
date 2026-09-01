@@ -311,7 +311,7 @@ Important Note - The reconstructed EBSD scans with grain numbering will need to 
 ## Contact
 
 If you encounter any bugs or have suggestions for improvement, please share your feedback here.
-Parardha Dhar - parardha.24bcg10003@vitbhopal.ac.in, Abhinav CHandraker - cabhinav@iisc.ac.in
+Parardha Dhar - parardha.24bcg10003@vitbhopal.ac.in, Abhinav Chandraker - cabhinav@iisc.ac.in
 
 ---
 
