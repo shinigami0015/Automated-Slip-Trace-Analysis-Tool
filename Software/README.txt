@@ -113,6 +113,7 @@ For each .ctf file in the input folder, the following are generated:
   <sampleName>_Beta_Grain_Slip_Data.csv
   Combined_SlipSystem_vs_Grains_AlphaBeta.png
 
+Important Note - The reconstructed EBSD scans with grain numbering will need to be rotated by 180 degrees to match the input EBSD scan.
 
 DEVELOPER NOTES
 ─────────────────────────────────────────────────────────────────────────────
