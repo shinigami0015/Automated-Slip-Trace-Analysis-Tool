@@ -39,7 +39,6 @@ The repository includes both modular **MATLAB scripts** utilizing the MTEX toolb
 * **Automated Data Processing:** Automatic Euler-to-spatial alignment, scanning artifact purging, grain boundary determination, and spline smoothing for high-precision boundary mapping.
 * **Theoretical Slip Trace Overlay:** Direct calculation and visual overlay of theoretical slip trace lines on Inverse Pole Figure (IPF) maps for HCP and BCC slip families.
 * **Schmid Factor Mapping:** High-throughput calculation of maximum resolved shear stress (Schmid factors) for user-selected loading directions (X, Y, or Z).
-* **Deformation Compatibility ($m'$ Parameter):** Boundary-by-boundary calculation and spatial mapping of the geometric Luster-Morris deformation compatibility parameter across grain interfaces.
 * **Statistical Data Export:** Automated extraction of grain-level crystallographic properties and aggregated slip system distribution statistics exported directly to CSV and high-resolution figures.
 
 ### ASTA Desktop Application (v1.0 UI)
@@ -198,7 +197,6 @@ Automated-Slip-Trace-Analysis-Tool/
 ¦   +-- slip_trace.m                      # Theoretical slip trace calculation module
 ¦   +-- activated_slips.m                 # Identification of active slip system families
 ¦   +-- computeSchmidFactors.m            # Schmid factor tensor calculation
-¦   +-- lustermorris.m                    # Luster-Morris (m') compatibility analysis
 ¦   +-- slip_systems.m                    # Definition of HCP and BCC slip system geometries
 ¦   +-- slipsystemdist.m                  # Statistical distribution compilation
 ¦   +-- match_slip_label.m                # Indexing helper (3-index BCC / 4-index HCP)
