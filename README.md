@@ -308,6 +308,11 @@ Important Note - The reconstructed EBSD scans with grain numbering will need to 
 * **User Interface & Application Architecture:** Parardha Dhar
 * **Code script and UI testing:** Abhinav Chandraker
 
+## Contact
+
+If you encounter any bugs or have suggestions for improvement, please share your feedback here.
+Parardha Dhar - parardha.24bcg10003@vitbhopal.ac.in, Abhinav CHandraker - cabhinav@iisc.ac.in
+
 ---
 
 ## License
