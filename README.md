@@ -298,6 +298,8 @@ For each processed input file, the pipeline generates structured outputs:
 | `<sample>_Beta_Grain_Slip_Data.csv` | Grain-by-grain Schmid factors and slip system metrics (Beta) |
 | `Combined_SlipSystem_vs_Grains_AlphaBeta.png` | Aggregated statistical distribution chart across all processed grains |
 
+Important Note - The reconstructed EBSD scans with grain numbering will need to be rotated by 180 degrees to match the input EBSD scan.
+
 ---
 
 ## Authors & Credits
