@@ -88,6 +88,8 @@ USAGE
 7. When complete, thumbnails of all generated PNG files appear in the
    Generated Outputs panel. Click any thumbnail to open full size.
 
+Important Note - The reconstructed EBSD scans with grain numbering will need to be rotated by 180 degrees to match the input EBSD scan.
+
 8. Click "📂 Open Output Folder" to browse all generated files.
 
 
