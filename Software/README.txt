@@ -157,9 +157,9 @@ Analysis window freezes
   → This should not happen (worker runs on background thread). If it does,
     click Abort and re-run.
 
-
-CONTACT
+Contact
 ─────────────────────────────────────────────────────────────────────────────
+If you encounter any bugs or have suggestions for improvement, please share your feedback here.
+Parardha Dhar - parardha.24bcg10003@vitbhopal.ac.in, Abhinav CHandraker - cabhinav@iisc.ac.in
 
-IISc Materials Science Lab
 Built with ASTA Tool v1.1 — PyQt6 + MATLAB Engine API
