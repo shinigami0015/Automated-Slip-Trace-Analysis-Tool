@@ -220,6 +220,9 @@ Automated-Slip-Trace-Analysis-Tool/
 
 ## Usage Guide
 
+Note before proceeding - The current methodology assumes that the phase numbering in .ctf scan files is as follows - (unindexed-0, BCC-1, HCP-2)
+In case this is not being followed, use modifyctf.m MATLAB script to modify the phase numbering of your .ctf scan file.
+
 ### Method 1: Running the Standalone Executable (`ASTA Tool.exe`)
 
 For end-users who prefer a direct desktop app experience without manually managing Python dependencies:
