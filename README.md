@@ -2,7 +2,7 @@
 
 An automated computational framework based on MTEX, and a desktop software application for crystallographic slip trace identification and Schmid factor mapping, and deformation compatibility analysis in dual-phase ($\alpha$-HCP / $\beta$-BCC) metallic alloys. 
 
-ASTA toolÂ will always be free. Kindly cite (article name and doi) if using this for your work, so that your colleagues may also know about this tool.
+ASTA tool will always be free. Kindly cite (article name and DOI) if using this for your work, so that your colleagues may also know about this tool.
 
 ![MATLAB](https://img.shields.io/badge/MATLAB-R2021a%2B-0076A8?style=for-the-badge&logo=mathworks&logoColor=white)
 ![MTEX](https://img.shields.io/badge/MTEX_Toolbox-Crystallography-4B0082?style=for-the-badge)
