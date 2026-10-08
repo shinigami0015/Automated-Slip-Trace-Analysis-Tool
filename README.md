@@ -2,11 +2,9 @@
 
 An automated computational framework based on MTEX, and a desktop software application for crystallographic slip trace identification and Schmid factor mapping, and deformation compatibility analysis in dual-phase ($\alpha$-HCP / $\beta$-BCC) metallic alloys. 
 
-ASTA tool will always be free. Please cite the following article whenever ASTA Tool, its algorithms, analysis scripts, or methodology are used in your research
+ASTA tool will always be free. Please [cite (DOI)](10.1016/j.msea.2026.151179) the following article whenever ASTA Tool, its algorithms, analysis scripts, or methodology are used in your research
 
     Chandraker, A., et al., Plasticity and damage initiation in textured Zr-2.5%Nb pressure tube material: A slip trace analysis-based study, Materials Science and Engineering: A, 2026.
-    
-DOI: 10.1016/j.msea.2026.151179
 
 ![MATLAB](https://img.shields.io/badge/MATLAB-R2021a%2B-0076A8?style=for-the-badge&logo=mathworks&logoColor=white)
 ![MTEX](https://img.shields.io/badge/MTEX_Toolbox-Crystallography-4B0082?style=for-the-badge)
